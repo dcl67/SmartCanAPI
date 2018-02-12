@@ -5,6 +5,6 @@ from django.contrib import admin
 from .models import *
 
 # Register your models here.
-admin.site.register(Disposables)
-admin.site.register(Materials)
+admin.site.register(Disposable)
+admin.site.register(Material)
 admin.site.register(WarningMessage)
