@@ -1,0 +1,9 @@
+mysql-connector==2.1.6
+playsound==1.2.2
+PyAudio==0.2.11
+pygame==1.9.3
+PyMySQL==0.8.0
+python-vlc==2.2.6100
+simpleaudio==1.0.1
+SpeechRecognition==3.7.1
+django-mysql==2.2.0
