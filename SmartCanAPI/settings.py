@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_mysql'
+    'django_mysql',
+    'VoteHandler.apps.VotehandlerConfig'
 ]
 
 MIDDLEWARE = [
@@ -77,12 +78,21 @@ WSGI_APPLICATION = 'SmartCanAPI.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        #'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         'NAME': 'smartcan',
         'USER': 'cancan',
         'PASSWORD': 'Phone-Timmy-27-Bald',
         'HOST': 'smartcan-1.c5r2ps7asn7f.us-east-1.rds.amazonaws.com',
-        'PORT': '3306'
+        'PORT': '3306',
+        'OPTIONS': {
+            # Tell MySQLdb to connect with 'utf8mb4' character set
+            'charset': 'utf8mb4',
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        },
+        # Tell Django to build the test database with the 'utf8mb4' character set
+        'TEST': {
+            'CHARSET': 'utf8mb4',
+            'COLLATION': 'utf8mb4_unicode_ci',
+        }
     }
 }
 

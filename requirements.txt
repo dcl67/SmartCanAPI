@@ -7,3 +7,4 @@ python-vlc==2.2.6100
 simpleaudio==1.0.1
 SpeechRecognition==3.7.1
 django-mysql==2.2.0
+mysqlclient==1.3.12
