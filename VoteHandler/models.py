@@ -14,7 +14,7 @@ class WarningMessage(Model):
 class Disposables(Model):
     name = models.CharField(max_length=250)
     votes = JSONField()
-    msg = models.ForeignKey(WarningMessage, on_delete=models.CASCADE)
+    msg = models.ForeignKey(WarningMessage, on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
         return self.name
