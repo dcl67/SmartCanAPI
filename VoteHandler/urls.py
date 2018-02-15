@@ -1,11 +1,13 @@
 from django.urls import path
 
-from VoteHandler.views import *
+from . import views
 
-urlpatterns=[
+app_name = "VoteHandler"
+urlpatterns = [
     #This is for passing in a string into the URL for processing in views.py
-    path(r'^recycling/(?P<string>[\w\-]+)/$',recycle_votes,name='recycle_votes'),
-    path(r'^compost/(?P<string>[\w\-]+)/$',compost_votes,name='compost_votes'),
-    path(r'^recycling/(?P<string>[\w\-]+)/$',landfill_votes,name='landfill_votes'),
+    path('', views.home, name='home'),
+    path('dispose/', views.dispose, name='dispose'),
+    path('result/<int:disposable_name>/<int:category_name>/', views.result, name='result'),
+    #path('fromSpeech/', view.from_speech, name='from_speech'),
 
 ]
