@@ -5,6 +5,6 @@
 <form action="{% url 'VoteHandler:dispose' %}" method="POST">
     {% csrf_token %}
     <label>Enter the item you wish to dispose of:</label>
-    <input type="text" name="disposable_item" id="dispose_input">
+    <input type="text" name="disposable_item" id="dispose_input" required>
     <input type="submit" id="dispose_submit" value="Enter">
 </form>
