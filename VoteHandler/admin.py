@@ -2,9 +2,10 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
-from .models import *
+from . import models
 
 # Register your models here.
-admin.site.register(Category)
-admin.site.register(Disposable)
-admin.site.register(DisposableVote)
+admin.site.register(models.Category)
+admin.site.register(models.Disposable)
+admin.site.register(models.DisposableVote)
+admin.site.register(models.Configuration)
