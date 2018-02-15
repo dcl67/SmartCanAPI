@@ -22,7 +22,7 @@ def dispose(request):
         # TODO: Add logic to redirect to category if the total # of votes is low
         top_category_id = disposeable.get_top_category().id
         votes_tuples = disposeable.get_top_votes()
-        # TODO: See if this can be cleaned up. Can possibly save context in session and pull it back up?
+        # TODO: See if this can be cleaned up. Possibly save context in session cookie read it in template?
         return HttpResponseRedirect("{0}?{1}".format(reverse('VoteHandler:result', args=(disposeable.id, top_category_id)), 
             urllib.parse.urlencode(votes_tuples)))
 
