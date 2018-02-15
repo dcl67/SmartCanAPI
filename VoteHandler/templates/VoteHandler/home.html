@@ -1,0 +1,8 @@
+<h1>Welcome to SmartCan!</h1>
+
+<form action="{% url 'VoteHandler:dispose' %}" method="POST">
+    {% csrf_token %}
+    <label>Enter the item you wish to dispose of:</label>
+    <input type="text" name="" id="dispose_input">
+    <input type="submit" id="dispose_submit" value="Enter">
+</form>
