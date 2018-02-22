@@ -67,7 +67,11 @@ class DisposableVote(models.Model):
 
 class Configuration(models.Model):
     can_id = models.UUIDField(verbose_name='Smartcan ID', unique=True)
-    config = models.TextField(max_length=4096)
+    config = models.TextField(max_length=4096) # Do we want three model fields for each of the disposal bins?
+    # We can also build these out with 
+    # Bin1 = forms.ChoiceField(choices=<disposable methods>, widget=forms.RadioSelect())
+    # Or checkboxes to say "This box takes these fields!" Thinking aloud.
+
 
     @staticmethod
     def new_can_id():

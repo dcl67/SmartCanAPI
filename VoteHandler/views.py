@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 import urllib.parse
 
-from django.shortcuts import render, reverse, redirect
+from django.shortcuts import render, reverse, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 
 from .models import Category, Disposable, DisposableVote
@@ -22,6 +22,9 @@ def dispose(request):
         # TODO: Add logic to redirect to category if the total # of votes is low
         top_category_id = disposeable.get_top_category().id
         votes_tuples = disposeable.get_top_votes()
+        # Checking num votes
+        if votes_tuples.votes < 10:
+            return redirect('VoteHandler:categorize', disposable_name=user_text)
         # TODO: See if this can be cleaned up. Possibly save context in session cookie read it in template?
         return HttpResponseRedirect("{0}?{1}".format(reverse('VoteHandler:result', args=(disposeable.id, top_category_id)), 
             urllib.parse.urlencode(votes_tuples)))
