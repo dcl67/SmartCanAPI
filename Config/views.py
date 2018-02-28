@@ -20,3 +20,13 @@ def register(request, smartcanid):
 
 def redirect(request, smartcanid):
     return HttpResponseRedirect(str(smartcanid)+'/register/')
+
+def initialize(request):
+    # Considering moving all of this under register
+    #TODO: make front end logic to pass the number of bins entered into this view
+    num_bins = 'foo' # later, get this number from the form
+    uuid = 'bar'
+    i=0
+    while i<num_bins:
+        Bins.objects.create(sId= uuid, bin_num=i, categor=None)
+        i=i+1

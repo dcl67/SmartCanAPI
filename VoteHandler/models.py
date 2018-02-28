@@ -64,23 +64,3 @@ class DisposableVote(models.Model):
         # TODO: When Kevin fixes his venv to use Python 3.6 we can use this again
         # return f"{disposable} has {count} vote{count > 1 ? 's' : ''} for {category}"
 
-
-class Configuration(models.Model):
-    can_id = models.UUIDField(verbose_name='Smartcan ID', unique=True)
-    config = models.TextField(max_length=4096) # Do we want three model fields for each of the disposal bins?
-    # We can also build these out with 
-    # Bin1 = forms.ChoiceField(choices=<disposable methods>, widget=forms.RadioSelect())
-    # Or checkboxes to say "This box takes these fields!" Thinking aloud.
-
-
-    @staticmethod
-    def new_can_id():
-        """Returns a random uuid that is not alredy being used as an ID"""
-        id = uuid.uuid4();
-        # Odds are astronomically low of this actually colliding. Do we need this check?
-        while Configuration.objects.filter(can_id=uuid).exists():
-            id = uuid.uuid4()
-        return id
-
-    def __str__(self):
-        return self.can_id

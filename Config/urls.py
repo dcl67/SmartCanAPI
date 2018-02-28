@@ -11,4 +11,5 @@ urlpatterns = [
     path('register/<int:smartcan_id>/', views.register, name='register'), #configure not yet defined
     path('redirect', views.redirect, name='redirect'), #configure not yet defined
 
+    path('initialize', views.initialize, name=initialization), #might be combined with register later
 ]
