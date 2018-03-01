@@ -8,4 +8,3 @@ from . import models
 admin.site.register(models.Category)
 admin.site.register(models.Disposable)
 admin.site.register(models.DisposableVote)
-admin.site.register(models.Configuration)

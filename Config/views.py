@@ -1,11 +1,17 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 
-def configure(request, smartcanid):
+from .models import CanInfo, Bin
+
+def configlanding(request):
+    return HttpResponse('foo')
+
+def configure(request, smartcan_id):
     # Skeleton getters for now, we can build these out once we define 
     # the SmartCan's models for identifying each unit
-    instance=get_object_or_404(Configuration, pk=smartcanid)
+    instance=get_object_or_404(CanInfo, pk=smartcan_id)
     form=ConfigurationForm(request.POST or None, instance=instance)
+    print(form)
     #if form.is_valid():
         
 
@@ -13,10 +19,10 @@ def submit_configuration(request, smartcanid):
     return HttpResponseRedirect(str(smartcanid)+'/configure/')
 
 def statistics(request, smartcanid):
-    instance=get_object_or_404(Configuration, pk=smartcanid)
+    instance=get_object_or_404(CanInfo, pk=smartcanid)
 
 def register(request, smartcanid):
-    instance=get_object_or_404(Configuration, pk=smartcanid)
+    instance=get_object_or_404(CanInfo, pk=smartcanid)
 
 def redirect(request, smartcanid):
     return HttpResponseRedirect(str(smartcanid)+'/register/')

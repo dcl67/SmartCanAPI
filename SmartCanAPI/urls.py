@@ -19,5 +19,5 @@ from django.contrib import admin
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('VoteHandler.urls')),
-    path('config/', include(Config.urls)),
+    path('config/', include('Config.urls')),
 ]

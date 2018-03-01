@@ -2,9 +2,6 @@ from django.db import models
 
 from VoteHandler.models import Category, Disposable
 
-import VoteHandler.models
-
-# Create your models here.
 class CanInfo(models.Model):
     can_id = models.UUIDField(verbose_name='Smartcan ID', unique=True)
     channel_name = models.CharField(max_length=255, null=True)
@@ -12,7 +9,6 @@ class CanInfo(models.Model):
     # We can also build these out with 
     # Bin1 = forms.ChoiceField(choices=<disposable methods>, widget=forms.RadioSelect())
     # Or checkboxes to say "This box takes these fields!" Thinking aloud.
-    bins = models.ForeignKey(Bin, null=True, Blank=True)
 
     @staticmethod
     def new_can_id():
@@ -27,7 +23,7 @@ class CanInfo(models.Model):
         return self.can_id
 
 class Bin(models.Model):
-    sId = models.ForeignKey(CanInfo)
+    sId = models.ForeignKey(CanInfo, on_delete=models.CASCADE)
     bin_num = models.CharField(max_length=15)
-    category = models.ForeignKey(Category, blank=False, null=False)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=False, null=False)
     #accepted_item1 = models.ForeignKey(Disposable, null=False, blank=False)
