@@ -41,8 +41,11 @@ class Disposable(models.Model):
         in the form ('category', count).
         """
         votes = DisposableVote.objects.filter(disposable=self.id).select_related('category')
-        d = {v.category.name: v.count for v in votes} 
-        return sorted(d.items(), key=lambda x: x[1])[:slice_size]
+        total = 0
+        for vote in votes:
+            total += v.count
+        d = {v.category.name: v.count/total for v in votes} 
+        return sorted(d.items(), key=lambda x: x[1]/total)[:slice_size]
 
     def save(self, *args, **kwargs):
         """Force name to be lowercase"""

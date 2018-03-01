@@ -14,7 +14,8 @@ def dispose(request):
     try:
         user_text = request.POST.get('disposable_item', '')
         if not user_text:
-            return render(request, 'VoteHandler/home.html', {'error_message' : "Please enter text."})
+            return render(request, 'VoteHandler/home.html',
+             {'error_message' : "Please enter text."})
         disposeable = Disposable.objects.get(name=user_text.lower())
     except Disposable.DoesNotExist:
         return redirect('VoteHandler:categorize', disposable_name=user_text)
@@ -25,9 +26,11 @@ def dispose(request):
         # Checking num votes
         if votes_tuples.votes < 10:
             return redirect('VoteHandler:categorize', disposable_name=user_text)
-        # TODO: See if this can be cleaned up. Possibly save context in session cookie read it in template?
-        return HttpResponseRedirect("{0}?{1}".format(reverse('VoteHandler:result', args=(disposeable.id, top_category_id)), 
-            urllib.parse.urlencode(votes_tuples)))
+        # TODO: See if this can be cleaned up. Possibly save context in session 
+        # cookie read it in template?
+        return HttpResponseRedirect("{0}?{1}".format(
+         reverse('VoteHandler:result', args=(disposeable.id, top_category_id)), 
+         urllib.parse.urlencode(votes_tuples)))
 
 def categorize(request, disposable_name):
     """View that guides user to selecting the correct category"""
