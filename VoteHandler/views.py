@@ -24,8 +24,8 @@ def dispose(request):
         top_category_id = disposeable.get_top_category().id
         votes_tuples = disposeable.get_top_votes()
         # Checking num votes
-        if votes_tuples.votes < 10:
-            return redirect('VoteHandler:categorize', disposable_name=user_text)
+        # if len(votes_tuples) < 10:
+        #     return redirect('VoteHandler:categorize', disposable_name=user_text)
         # TODO: See if this can be cleaned up. Possibly save context in session 
         # cookie read it in template?
         return HttpResponseRedirect("{0}?{1}".format(

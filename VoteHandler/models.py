@@ -43,7 +43,7 @@ class Disposable(models.Model):
         votes = DisposableVote.objects.filter(disposable=self.id).select_related('category')
         total = 0
         for vote in votes:
-            total += v.count
+            total += vote.count
         d = {v.category.name: v.count/total for v in votes} 
         return sorted(d.items(), key=lambda x: x[1]/total)[:slice_size]
 
