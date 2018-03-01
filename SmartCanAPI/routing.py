@@ -1,5 +1,15 @@
-from channels.routing import ProtocolTypeRouter
+from django.urls import path
+
+from channels.routing import ProtocolTypeRouter, URLRouter
+
+from VoteHandler.consumers import CommanderConsumer
+
 
 application = ProtocolTypeRouter({
-    # Empty for now (http-> django views is added by default)
+    # (http-> django views is added by default)
+
+    #TODO: Wrap in AuthMiddleware
+    "websocket": URLRouter([
+        path("ws/", CommanderConsumer)
+    ])
 })

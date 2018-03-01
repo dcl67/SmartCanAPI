@@ -13,6 +13,16 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 import os
 
 ###### Channels settings
+redis_host = os.environ.get('REDIS_HOST', 'localhost')
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [(redis_host, 6379)],
+        },
+    },
+}
 
 # ASGI_APPLICATION should be set to your outermost router
 ASGI_APPLICATION = 'SmartCanAPI.routing.application'
