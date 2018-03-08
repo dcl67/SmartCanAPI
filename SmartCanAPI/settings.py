@@ -30,6 +30,8 @@ ASGI_APPLICATION = 'SmartCanAPI.routing.application'
 
 ###### Project specific settings
 
+# How many votes to add when a user categorizes
+CATEGORIZE_VOTE_WEIGHT = 1
 # Minimum confidence required to not redirect cause a redirect to the categorize page
 MIN_CONFIDENCE = 0.20
 MIN_NORMALIZE_COUNT = 100

@@ -66,3 +66,10 @@ class DisposableVote(models.Model):
         # TODO: When Kevin fixes his venv to use Python 3.6 we can use this again
         # return f"{disposable} has {count} vote{count > 1 ? 's' : ''} for {category}"
 
+    def add_votes(self, count):
+        """Adds the number to this objects count then save. Returns nothing."""
+        if count < 0:
+            count = 0
+        self.count += count
+        self.save()
+

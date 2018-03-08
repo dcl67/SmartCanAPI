@@ -1,5 +1,27 @@
 <h1>Placeholder categorization page</h1>
 
-{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+{% if error_message %}
+    <h2>{{ error_message }}</h2>
+{% endif %}
 
-<p>This page is for categorizing {{ disposable_name }}</p>
+{% if votes %}
+    <h2>This item currently has the following votes:</h2>
+    <table>
+        <tr><th>Category</th><th># of Votes</th></tr>
+        {% for category, count in votes.items %}
+            <tr><td>{{ category }}</td> <td>{{ count }}</td>
+        {% empty %}
+            <tr><td>N/A</td><td>N/A</td></tr>
+        {% endfor %}
+    </table>
+{% endif %}
+
+<h2>This page is for categorizing {{ disposable_name }}</h2>
+
+{% if form %}
+    <form  action="{% url 'VoteHandler:vote' %}" method="POST">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Submit">
+    </form>
+{% endif %}
