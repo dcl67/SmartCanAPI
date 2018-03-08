@@ -1,6 +1,6 @@
 <h1>Results page</h1>
 
-<p>SmartCan says '{{ disposable_name }}' is a '{{ category_name }}'!</p>
+<h2>SmartCan says '{{ disposable_name }}' is a '{{ category_name }}'!</h2>
 
 <table>
     <tr><th>Rank</th><th>Category</th><th>Confidence</th></tr>
@@ -8,3 +8,10 @@
         <tr><td>{{ forloop.counter }}</td><td>{{ category }}</td> <td>{{ count|floatformat:2 }}%</td>
     {% endfor %}
 </table>
+
+<h2>Disagree with this categorization?</h2>
+<p>Click below to suggest another category</p>
+
+<form action="{% url 'VoteHandler:categorize' disposable_name %}" method="GET">
+    <input type="submit" value="Categorize">
+</form>
