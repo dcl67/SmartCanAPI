@@ -2,8 +2,9 @@
 
 <p>SmartCan says '{{ disposable_name }}' is a '{{ category_name }}'!</p>
 
-<ol>
-    {% for category, count in votes.items %}
-        <li>{{ category }} {{ count }}</li>
+<table>
+    <tr><th>Rank</th><th>Category</th><th>Confidence</th></tr>
+    {% for category, count in votes %}
+        <tr><td>{{ forloop.counter }}</td><td>{{ category }}</td> <td>{{ count|floatformat:2 }}%</td>
     {% endfor %}
-</ol>
+</table>

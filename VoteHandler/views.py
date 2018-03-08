@@ -2,10 +2,12 @@
 from __future__ import unicode_literals
 import urllib.parse
 
+from django.conf import settings
 from django.shortcuts import render, reverse, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 
 from .models import Category, Disposable, DisposableVote
+from .utils import votes_to_percentages
 
 # TODO: Write some tests!
 
@@ -20,17 +22,15 @@ def dispose(request):
     except Disposable.DoesNotExist:
         return redirect('VoteHandler:categorize', disposable_name=user_text)
     else:
-        # TODO: Add logic to redirect to category if the total # of votes is low
         top_category_id = disposeable.get_top_category().id
-        votes_tuples = disposeable.get_top_votes()
-        # Checking num votes
-        # if len(votes_tuples) < 10:
-        #     return redirect('VoteHandler:categorize', disposable_name=user_text)
-        # TODO: See if this can be cleaned up. Possibly save context in session 
-        # cookie read it in template?
+        votes = disposeable.get_top_votes()
+        percentage_tuples = votes_to_percentages(votes)
+        if percentage_tuples[0][1] < settings.MIN_CONFIDENCE:
+            return redirect('VoteHandler:categorize', disposable_name=user_text)
+        # TODO: This still feels gross, find a way to handle better
         return HttpResponseRedirect("{0}?{1}".format(
          reverse('VoteHandler:result', args=(disposeable.id, top_category_id)), 
-         urllib.parse.urlencode(votes_tuples)))
+         urllib.parse.urlencode(percentage_tuples)))
 
 def categorize(request, disposable_name):
     """View that guides user to selecting the correct category"""
@@ -47,7 +47,7 @@ def result(request, disposable_name, category_name):
     return render(request, 'VoteHandler/result.html', 
     {'disposable_name' : Disposable.objects.get(id=disposable_name).name,
      'category_name' : Category.objects.get(id=category_name).name,
-     'votes' : votes})
+     'votes' : sorted(votes.items(), key=lambda x: x[1], reverse=True)})
 
 # def from_speech(request):
 #     pass

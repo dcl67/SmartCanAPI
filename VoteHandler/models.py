@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from django.db import models
-
 import uuid
+
+from django.core.validators import MinValueValidator
+from django.db import models
 
 # Create your models here.
 class Category(models.Model):
@@ -35,17 +36,16 @@ class Disposable(models.Model):
                 max_count = vote.count
         return top_category
 
-    def get_top_votes(self, slice_size=3):
+    def get_top_votes(self, slice_size=None):
         """
-        Returns up to slice_size of the top votes for this Disposable as a list of tuples
-        in the form ('category', count).
+        Returns up to slice_size of the top vote counts for this Disposable 
+        as a QuerySet of Disposeable.
         """
         votes = DisposableVote.objects.filter(disposable=self.id).select_related('category')
-        total = 0
-        for vote in votes:
-            total += vote.count
-        d = {v.category.name: v.count/total for v in votes} 
-        return sorted(d.items(), key=lambda x: x[1]/total)[:slice_size]
+        if slice_size:
+            return votes[:slice_size]
+        else:
+            return votes
 
     def save(self, *args, **kwargs):
         """Force name to be lowercase"""
@@ -56,8 +56,7 @@ class Disposable(models.Model):
 class DisposableVote(models.Model):
     disposable = models.ForeignKey(Disposable, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    count = models.IntegerField(default=0)
-
+    count = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)])
     class Meta:
         unique_together = ('category','disposable')
 

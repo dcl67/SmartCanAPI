@@ -28,6 +28,13 @@ CHANNEL_LAYERS = {
 ASGI_APPLICATION = 'SmartCanAPI.routing.application'
 
 
+###### Project specific settings
+
+# Minimum confidence required to not redirect cause a redirect to the categorize page
+MIN_CONFIDENCE = 0.20
+MIN_NORMALIZE_COUNT = 100
+
+
 ###### Normal Django settings
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -140,7 +147,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'EST'
 
 USE_I18N = True
 
