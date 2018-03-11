@@ -11,9 +11,17 @@ def configure(request, smartcan_id):
     # the SmartCan's models for identifying each unit
     instance=get_object_or_404(CanInfo, pk=smartcan_id)
     form=ConfigurationForm(request.POST or None, instance=instance)
-    print(form)
+    if request.method=='POST':
+        if form.is_valid():
+            category=form.cleaned_data['category']
+            return HttpResponseRedirect(reverse('config_detail', kwargs={'pk':pk}))
+    else:
+        form=ConfigurationForm()
+    return render(request,'templates/configure.html', {'form':form})
     #if form.is_valid():
         
+def config_detail(request, pk):
+    
 
 def submit_configuration(request, smartcanid):
     return HttpResponseRedirect(str(smartcanid)+'/configure/')

@@ -5,9 +5,9 @@ from .models import *
 from VoteHandler.models import Category
 
 class ConfigurationForm(forms.ModelForm):
-    choices = forms.MultipleChoiceField(
-        choices = Category.objects.all()
-        widget  = forms.CheckboxSelectMultiple,
+    choices = forms.ChoiceField(
+        choices = Category.objects.all(),
+        widget  = forms.ChoiceField,
     )
     class Meta:
-        
+        model = Bin
