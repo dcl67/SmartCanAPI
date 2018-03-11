@@ -64,6 +64,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'crispy_forms',
+
     'VoteHandler.apps.VoteHandlerConfig',
     'Config.apps.ConfigConfig',
     'channels',

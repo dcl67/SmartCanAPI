@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 
 from .models import CanInfo, Bin
+from .forms import ConfigurationForm
 
 def configlanding(request):
     return HttpResponse('foo')
@@ -11,17 +12,30 @@ def configure(request, smartcan_id):
     # the SmartCan's models for identifying each unit
     instance=get_object_or_404(CanInfo, pk=smartcan_id)
     form=ConfigurationForm(request.POST or None, instance=instance)
+    print(form)
+
+def configure_bins(request):
+    form=ConfigurationForm(request.POST)
     if request.method=='POST':
         if form.is_valid():
+            sID=form.cleaned_data['sID']
+            bin_num=form.cleaned_data['bin_num']
             category=form.cleaned_data['category']
+            Bin.objects.create(sId=sID,bin_num=bin_num,category=category,)
             return HttpResponseRedirect(reverse('config_detail', kwargs={'pk':pk}))
     else:
         form=ConfigurationForm()
-    return render(request,'templates/configure.html', {'form':form})
+    return render(request,'configure.html', {'form':form})
     #if form.is_valid():
         
-def config_detail(request, pk):
-    
+def bin_config_detail(request, pk):
+    configuration=get_object_or_404(Bin,pk=pk)
+    context = {
+        'sId':sId,
+        'bin_num':bin_num,
+        'category':category,
+    }
+    return render(request,'templates/info.html',context=context)
 
 def submit_configuration(request, smartcanid):
     return HttpResponseRedirect(str(smartcanid)+'/configure/')
