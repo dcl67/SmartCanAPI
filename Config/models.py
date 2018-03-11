@@ -27,3 +27,6 @@ class Bin(models.Model):
     bin_num = models.CharField(max_length=15)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=False, null=False)
     #accepted_item1 = models.ForeignKey(Disposable, null=False, blank=False)
+    # For proof of concept, but will probably remove these
+    class Meta:
+        unique_together = (("sId", "category"),)
