@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
+from django.views.generic.detail import DetailView
 
 from .models import CanInfo, Bin
 from .forms import ConfigurationForm
@@ -10,12 +11,17 @@ def home(request):
 
 def configlist(request):
     can_id = request.POST.get('can_id')
-    print(can_id)
     if not can_id:
         return render(request, 'landing.html',
-            {'error_message' : 'Please enter text.'}
+            {'error_message' : 'Please enter your UUID.'}
         )
-    can = CanInfo.objects.filter(can_id=can_id.lower())
+    #can = Bin.objects.filter(CanInfo__sId__exact=str(can_id.lower()))
+    can = Bin.objects.all()
+    context = {
+        can:can
+    }
+    print(context)
+    return render(request, 'list.html', context)
 
 
 
@@ -34,8 +40,8 @@ def configure_bins(request):
             sId=form.cleaned_data['sId']
             bin_num=form.cleaned_data['bin_num']
             category=form.cleaned_data['category']
-            Bin.objects.create(sId=sId,bin_num=bin_num,category=category,)
-            return HttpResponseRedirect(reverse('config_detail', kwargs={'pk':pk}))
+            new_bin = Bin.objects.create(sId=sId,bin_num=bin_num,category=category,)
+            return HttpResponseRedirect(reverse('Config:config_detail', args=(new_bin.id,)))
     else:
         form=ConfigurationForm()
     return render(request,'configure.html', {'form':form})
@@ -52,14 +58,17 @@ def edit_bin_config(request, pk):
         return HttpResponseRedirect(reverse('config_detail', kwargs={'pk':pk}))
     return render(request,'configure.html',{'form':form})
 
-def bin_config_detail(request, pk):
-    configuration=get_object_or_404(Bin,pk=pk)
-    context = {
-        'sId':sId,
-        'bin_num':bin_num,
-        'category':category,
-    }
-    return render(request,'templates/info.html',context=context)
+#def config_detail(request,pk):
+class config_detail(DetailView):
+    model = Bin
+    template_name='info.html'
+    #configuration=get_object_or_404(Bin,pk=pk)
+    #context = {
+    #    'sId':sId,
+    #    'bin_num':bin_num,
+    #    'category':category,
+    #}
+    #return render(request,'templates/info.html',context=context)
 
 def submit_configuration(request, smartcanid):
     return HttpResponseRedirect(str(smartcanid)+'/configure/')

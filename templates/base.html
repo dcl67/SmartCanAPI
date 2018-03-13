@@ -43,13 +43,13 @@ The content block and div you have below.
 		</div>
 	</nav>
 
-	<!-- block and div for content to be overridden by the files we place on top of this one -->
+	{% comment %}block and div for content to be overridden by the files we place on top of this one {% endcomment %}
     <div id="content">
 		{% block content %}{% endblock %}
 	</div>
 
 	<div class="footer">
-		<p> - </p> <!-- We can add some text here if we want! Our names, perhaps? -->
+		<p> - </p> {% comment %} We can add some text here if we want! Our names, perhaps? {% endcomment %}
 	</div>
 </body>
 </html>

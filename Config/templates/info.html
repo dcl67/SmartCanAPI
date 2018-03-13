@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block content %}
+    <p>sId: {{ bin.sId }}</p>
+    <p>Bin Number: {{ bin.bin_num }}</p>
+    <p>Category: {{ bin.category }}</p>
+
+    {% comment %}{% for b in bin.bin_num %}
+        <p>{{ b.bin_num }}</p>
+        {% for c in category %}
+            {{ c.category }}
+        {% endfor %}
+    {% endfor %}
+    <p></p>{% endcomment %}
+{% endblock %}
