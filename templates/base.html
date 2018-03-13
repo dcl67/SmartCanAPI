@@ -1,0 +1,55 @@
+{% comment %}
+The way this file works is it acts as a parent html file, but makes adding generic elements
+to each of our pages fairly simple.
+Outdated, but for more good info see 
+https://docs.djangoproject.com/en/1.7/topics/templates/ 
+{% endcomment %} 
+
+{% load staticfiles %}
+<!doctype html>
+<html lang="en">
+{% comment %}
+CSS is loaded into your base.html and carries to each file that extends it. Same deal with the header, content tag, and footer.
+The big difference for your file is that, instead of <body> tags, you now use {% block content %} tags, which override
+The content block and div you have below.
+{% endcomment %}
+
+<style>
+	.footer {
+		position: fixed;
+		left: 0;
+		bottom: 0;
+		width: 100%;
+		background-color: rgb(25, 92, 25);
+		color: white;
+		text-align: left;
+	}
+</style>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+	<nav style='background-color:rgb(25, 92, 25);'>
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<a class="navbar-brand" style='color:white;' href="#">Smart Can</a>
+			</div>
+		</div>
+	</nav>
+
+	<!-- block and div for content to be overridden by the files we place on top of this one -->
+    <div id="content">
+		{% block content %}{% endblock %}
+	</div>
+
+	<div class="footer">
+		<p> - </p> <!-- We can add some text here if we want! Our names, perhaps? -->
+	</div>
+</body>
+</html>

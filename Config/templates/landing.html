@@ -1,0 +1,46 @@
+{% comment %} {% extends 'base.html' %} {% endcomment %}
+{% load staticfiles %}
+
+<style>
+    .footer {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        background-color: rgb(25, 92, 25);
+        color: white;
+        text-align: left;
+        }
+</style>
+        
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+              
+<!-- <body> -->
+{% block content %}
+    <nav style='background-color:rgb(25, 92, 25);'>
+        <div class="container-fluid">
+            <div class="navbar-header">
+            <a class="navbar-brand" style='color:white;' href="#">SmartCan Admin</a>
+            </div>
+        </div>
+        </nav>
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+    <form action="{% url 'Config:configlist' %}" method="POST">
+        {% csrf_token %}
+        <label>Hello!<br>Please enter your UUID:</label>
+        <input type="text" name="can_id" id="can_id" required>
+        <input type="submit" id="can_id_submit" value="Enter">
+    </form>
+<!-- </body>
+
+<div class="footer">
+    <p>---</p>
+</div> -->
+{% endblock %}

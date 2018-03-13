@@ -1,6 +1,37 @@
+{% extends 'base.html' %}
 {% load staticfiles %}
 {% load crispy_forms_tags %}
 
+<style>
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: rgb(25, 92, 25);
+    color: white;
+    text-align: left;
+ }
+</style>
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    </head>
+      
+<nav style='background-color:rgb(25, 92, 25);'>
+<div class="container-fluid">
+    <div class="navbar-header">
+    <a class="navbar-brand" style='color:white;' href="#">SmartCan</a>
+    </div>
+</div>
+</nav>
+
+<!-- <body> -->
+{% block content %}
 <h2>Configure your bin!</h2>
 
 <!-- Crispy form HTML -->
@@ -21,8 +52,11 @@
         </form>
     </div>
 </div>
-
-
+<!-- </body>
+<div class="footer">
+    <p>Footer</p>
+</div> -->
+{% endblock %}
 
 <!-- Non-crispy HTML
     <div id="block">
@@ -37,27 +71,9 @@
 
     <h5>Category:</h1>
     <select>
-        <option value="---------">---------</option>
-        <option value="Ceramic">Ceramic</option>
-        <option value="Chemical">Chemical</option>
-        <option value="Electronic">Electronic</option>
-        <option value="Glass">Glass</option>
-        <option value="Landfill">Landfill</option>
-        <option value="Metal">Metal</option>
-        <option value="Metal">Metal</option>
-        <option value="Organic">Organic</option>
-        <option value="Paper">Paper</option>
-        <option value="Plastic #7">Plastic #7</option>
-        <option value="Plastic #6">Plastic #6</option>
-        <option value="Plastic #5">Plastic #5</option>
-        <option value="Plastic #4">Plastic #4</option>
-        <option value="Plastic #3">Plastic #3</option>
-        <option value="Plastic #2">Plastic #2</option>
-        <option value="Plastic #1">Plastic #1</option>
-        <option value="Plastic PLA">Plastic PLA</option>
-        <option value="Textile">Textile</option>
-        <option value="Unknown">Unknown</option>
-        <option value="Wood">Wood</option>
+        {% for cat in category %}
+        <option value="{{cat}}">{{cat}}</option>
+        {% endfor %}
     </select>
     </form>
 </div> -->
