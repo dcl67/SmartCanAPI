@@ -70,6 +70,7 @@ class MotorController():
         final_loc = final_loc_unbounded % 360
 
         # Continue until we stop getting closer
+        self.move_seconds(fwd=fwd, seconds=0.2) # Move before first check
         while (abs(curr_loc - final_loc) < abs(last_loc - final_loc)):
             self.move_seconds(fwd=fwd, seconds=0.2)
             curr_loc = self.res_reader.get_degrees()
