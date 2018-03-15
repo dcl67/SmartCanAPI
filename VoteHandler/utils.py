@@ -14,5 +14,5 @@ def votes_to_percentages(QuerySet_votes):
     # If there are less than MIN_NORMALIZE_COUNT votes, treat it as less certain
     if total < settings.MIN_NORMALIZE_COUNT: 
         total = settings.MIN_NORMALIZE_COUNT
-    d = {v.category.name: v.count/total for v in QuerySet_votes} 
-    return sorted(d.items(), key=lambda x: x[1]/total, reverse=True)
+    d = {v.category.name: 100*v.count/total for v in QuerySet_votes} 
+    return sorted(d.items(), key=lambda x: x[1], reverse=True)
