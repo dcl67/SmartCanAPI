@@ -10,6 +10,7 @@
 ## Main endpoints
 
  - HTTP is at http://IP:8000/api
+ - Config is at http://IP:8000/config
  - websocket is at ws://IP:8000/ws 
 
 
