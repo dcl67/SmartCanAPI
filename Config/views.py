@@ -16,12 +16,14 @@ def configlist(request):
             {'error_message' : 'Please enter your UUID.'}
         )
     #can = Bin.objects.filter(CanInfo__sId__exact=str(can_id.lower()))
-    can = Bin.objects.all()
+    can = Bin.objects.filter(sId__can_id=can_id)
     context = {
         can:can
     }
-    print(context)
-    return render(request, 'list.html', context)
+    for c in context:
+        for ci in c:
+            print(str(ci.sId))
+    return render(request, 'list.html', context=context)
 
 
 
@@ -62,13 +64,6 @@ def edit_bin_config(request, pk):
 class config_detail(DetailView):
     model = Bin
     template_name='info.html'
-    #configuration=get_object_or_404(Bin,pk=pk)
-    #context = {
-    #    'sId':sId,
-    #    'bin_num':bin_num,
-    #    'category':category,
-    #}
-    #return render(request,'templates/info.html',context=context)
 
 def submit_configuration(request, smartcanid):
     return HttpResponseRedirect(str(smartcanid)+'/configure/')
@@ -76,18 +71,30 @@ def submit_configuration(request, smartcanid):
 def statistics(request, smartcanid):
     instance=get_object_or_404(CanInfo, pk=smartcanid)
 
-def register(request, smartcanid):
-    instance=get_object_or_404(CanInfo, pk=smartcanid)
+def registerhtml(request):
+    """
+    Hosting for the front end of registration
+    """
+    return render(request, 'register.html')
+
+def register(request):
+    """
+    Back-end to handle registration of a Smart Can
+    """
+    #instance=get_object_or_404(CanInfo, pk=smartcanid)
+    id_num=request.POST.get('id_number')
+    bin_num=request.POST.get('number_bins')
+    number_bins=int(bin_num)
+    channel_num=request.POST.get('channel_num')
+    registered_can=CanInfo.objects.create(can_id=id_num, channel_name=channel_num, config=' ')
+    i=0
+    while i < number_bins:
+        print("num bins are: "+str(number_bins))
+        print("i is: "+str(i))
+        Bin.objects.create(sId=registered_can,bin_num=i,category=None)
+        i+=1
+    return HttpResponseRedirect(reverse('Config:configlist'))
 
 def redirect(request, smartcanid):
     return HttpResponseRedirect(str(smartcanid)+'/register/')
 
-def initialize(request):
-    # Considering moving all of this under register
-    #TODO: make front end logic to pass the number of bins entered into this view
-    num_bins = 'foo' # later, get this number from the form
-    uuid = 'bar'
-    i=0
-    while i<num_bins:
-        Bins.objects.create(sId= uuid, bin_num=i, categor=None)
-        i=i+1

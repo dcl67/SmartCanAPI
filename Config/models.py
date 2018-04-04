@@ -20,13 +20,17 @@ class CanInfo(models.Model):
         return id
 
     def __str__(self):
-        return self.can_id
+        return str(self.can_id)
 
 class Bin(models.Model):
     sId = models.ForeignKey(CanInfo, on_delete=models.CASCADE)
     bin_num = models.CharField(max_length=15)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=False, null=False)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True)
     #accepted_item1 = models.ForeignKey(Disposable, null=False, blank=False)
     # For proof of concept, but will probably remove these
+    
+    def __str__(self):
+        return str(self.bin_num) + " in " + str(self.sId)
+    
     class Meta:
         unique_together = (("sId", "category"),)

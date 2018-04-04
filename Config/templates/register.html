@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block content %}
+<h6>Smart Can Registration</h6>
+
+<form action="{% url 'Config:register' %}" method="POST">
+    {% csrf_token %}
+    <p><label>Hello!<br>Please enter your UUID:</label>
+    <input type="text" name="id_number" id="id_number" required></p>
+
+    <br><p><label>How many bins are in your Smart Can?</label>
+    <input type="number" name="number_bins" id="number_bins" min="0" max="10" required></p>
+
+    <br><p><label>What channel will your Smart Can communicate on? (should probably remove this, or randomize upon creation)</label>
+    <input type="text" name="channel_num" id="channel_num" required</p>
+
+    <br><p><input type="submit" id="can_id_submit" value="Enter"></p>
+</form>
+
+{% endblock %}

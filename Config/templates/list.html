@@ -1,0 +1,17 @@
+{% comment %} {% extends 'base.html' %} {% endcomment %}
+{% load staticfiles %}
+
+{% block content %}
+Hello, you made it.
+
+{% for c in can %}
+    <p>{{ c.sId.can_id }}</p>
+    <p>{{ c.bin_num }}</p>
+    <p>{{ c.category }}</p>
+
+    <p>{{ c.can_id }}</p>
+    <p>{{ c.channel_name }}</p>
+    <p>{{ c.config }}</p>
+{% endfor %}
+
+{% endblock %}
