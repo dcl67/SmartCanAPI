@@ -26,9 +26,9 @@ async def move_consumer(bin_q, lid_controller: LidController):
 
 def main():
     # Initialize devices
-    top_rr = ResistorReader(spi_port=0, spi_device=0)
+    top_rr = ResistorReader(0)
     top_mc = MotorController(top_rr, fwd_pin=2, rev_pin=3)
-    btm_rr = ResistorReader(spi_port=1, spi_device=1)
+    btm_rr = ResistorReader(1)
     btm_mc = MotorController(btm_rr, fwd_pin=4, rev_pin=5)
     lc = LidController(top_mc, btm_mc)
 
