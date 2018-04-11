@@ -24,19 +24,24 @@ async def move_consumer(bin_q, lid_controller: LidController):
         await asyncio.sleep(10)
         await lid_controller.close()
 
-def main():
-    # Initialize devices
+def init_lid_controller():
+    """Sets up the devices for the lid controller"""
     top_rr = ResistorReader(0)
     top_mc = MotorController(top_rr, fwd_pin=2, rev_pin=3)
     btm_rr = ResistorReader(1)
     btm_mc = MotorController(btm_rr, fwd_pin=4, rev_pin=5)
-    lc = LidController(top_mc, btm_mc)
+    return LidController(top_mc, btm_mc)
+
+def main():
+    # Initialize devices
+    lc = init_lid_controller()
 
     # TODO: Registration
 
     # TODO: Setup pedal events with GPIO
 
     # TODO: add websockets loop and pedal listener
+    
     bin_q = asyncio.Queue()
     tasks = [asyncio.ensure_future(move_consumer(bin_q, lc)),]
     loop = asyncio.get_event_loop()
