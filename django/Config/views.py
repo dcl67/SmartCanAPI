@@ -18,7 +18,6 @@ def configlist(request):
         return render(request, 'landing.html',
             {'error_message' : 'Please enter your UUID.'}
         )
-    #can = Bin.objects.filter(CanInfo__sId__exact=str(can_id.lower()))
     bins = Bin.objects.filter(sId__can_id=can_id)
     can = CanInfo.objects.get(can_id=can_id)
 
