@@ -2,6 +2,9 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic.detail import DetailView
+import json
+import os.path
+
 
 from .models import CanInfo, Bin
 from .forms import ConfigurationForm
@@ -16,16 +19,10 @@ def configlist(request):
             {'error_message' : 'Please enter your UUID.'}
         )
     #can = Bin.objects.filter(CanInfo__sId__exact=str(can_id.lower()))
-    can = Bin.objects.filter(sId__can_id=can_id)
-    context = {
-        can:can
-    }
-    for c in context:
-        for ci in c:
-            print(str(ci.sId))
-    return render(request, 'list.html', context=context)
+    bins = Bin.objects.filter(sId__can_id=can_id)
+    can = CanInfo.objects.get(can_id=can_id)
 
-
+    return render(request, 'list.html', {'bins': bins, 'can': can })
 
 def configure(request, smartcan_id):
     # Skeleton getters for now, we can build these out once we define 
@@ -77,16 +74,18 @@ def registerhtml(request):
     """
     return render(request, 'register.html')
 
-def register(request):
+def register(request, can_id):
     """
     Back-end to handle registration of a Smart Can
     """
+    # Gonna change this to allow a file to open this, POST the data and save it.
     #instance=get_object_or_404(CanInfo, pk=smartcanid)
-    id_num=request.POST.get('id_number')
+    #id_num=request.POST.get('id_number') #might switch this, have it sent over via web-socket from the smart can
+    #id_num=UUID.uuid4()
     bin_num=request.POST.get('number_bins')
     number_bins=int(bin_num)
-    channel_num=request.POST.get('channel_num')
-    registered_can=CanInfo.objects.create(can_id=id_num, channel_name=channel_num, config=' ')
+    #channel_num=request.POST.get('channel_num')
+    registered_can=CanInfo.objects.create(can_id=can_id, channel_name=channel_num, config=' ')
     i=0
     while i < number_bins:
         print("num bins are: "+str(number_bins))
@@ -98,3 +97,10 @@ def register(request):
 def redirect(request, smartcanid):
     return HttpResponseRedirect(str(smartcanid)+'/register/')
 
+def json_reader(request):
+    my_path = os.path.abspath(os.path.dirname(__file__))
+    json_data = os.path.join(my_path,'../config.json')
+    datas = open(json_data).read()
+    data = json.dumps(datas)
+    print(data)
+    return HttpResponse(data)
