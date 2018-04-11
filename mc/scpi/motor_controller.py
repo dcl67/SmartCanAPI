@@ -72,7 +72,7 @@ class MotorController():
     async def move_seconds(self, seconds=1, fwd=True):
         """
         Takes a boolean indicating fwd or rev an amount of time to go in the
-        specified direction. Hundredth of a second resolution. Returns nothing.
+        specified direction. Tenth of a second resolution. Returns nothing.
         """
         if fwd:
             self.fwd()
@@ -82,7 +82,7 @@ class MotorController():
         start_time = time.monotonic()
 
         while (time.monotonic() - start_time) < seconds:
-            await asyncio.sleep(0.01)
+            await asyncio.sleep(0.1)
 
         self.off()     
 
