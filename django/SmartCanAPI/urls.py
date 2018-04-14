@@ -23,5 +23,8 @@ urlpatterns = [
     path('config/', include('Config.urls')),
 
     #User views
+    #Not defining a sign-up view
+    #Will call this a paid service, thus we will manually create Django accounts for users and provide them logins
+    #accounts/password_reset can deal with resetting passwords
     path('accounts/', include('django.contrib.auth.urls')),
 ]

@@ -21,8 +21,12 @@
     </tr>
     {% for b in bins %}
     <tr style="border:2px solid black;">
-        <td style="border:2px solid black;">{{ b.bin_num }}</td>
-        <td style="border:2px solid black;">{{ b.category }}</td>
+        <td style="border:2px solid black;">
+            <a href="/config/configlist/bin/edit/{{b.id}}">{{ b.bin_num }}</a>
+        </td>
+        <td style="border:2px solid black;">
+            <a href="/config/configlist/bin/edit/{{b.id}}">{{ b.category }}</a>
+        </td>
     </tr>
     {% endfor %}
 </table>

@@ -45,7 +45,7 @@ def configure_bins(request):
     return render(request,'configure.html', {'form':form})
 
 
-def edit_bin_config(request, pk):
+def edit_bin(request, pk):
     bin_config = get_object_or_404(Bin, pk=pk)
     form = ConfigurationForm(request.POST, instance=bin_config)
     if form.is_valid():
@@ -53,7 +53,7 @@ def edit_bin_config(request, pk):
         bin_num=form.cleaned_data['bin_num']
         category=form.cleaned_data['category']
         form.save()
-        return HttpResponseRedirect(reverse('config_detail', kwargs={'pk':pk}))
+        return HttpResponseRedirect(reverse('Config:config_detail', kwargs={'pk':pk}))
     return render(request,'configure.html',{'form':form})
 
 #def config_detail(request,pk):
@@ -81,7 +81,7 @@ def register(request, can_id):
     #instance=get_object_or_404(CanInfo, pk=smartcanid)
     #id_num=request.POST.get('id_number') #might switch this, have it sent over via web-socket from the smart can
     #id_num=UUID.uuid4()
-    bin_num=request.POST.get('number_bins')
+    #bin_num=request.POST.get('number_bins')
     number_bins=int(bin_num)
     #channel_num=request.POST.get('channel_num')
     registered_can=CanInfo.objects.create(can_id=can_id, channel_name=channel_num, config=' ')
