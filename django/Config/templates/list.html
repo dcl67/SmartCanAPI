@@ -10,9 +10,12 @@
 {% block content %}
 
 <p>
-    <h1>Bin configuration for {{ can.can_id }}</h1>
+    <h1>
+        Bin configuration for <a href="/config/configlist/{{can.id}}">{{ can.can_id }}</a>
+    </h1>
     Config: {{ can.config }}<br>
 </p>
+
 
 <table style="border:2px solid black;">
     <tr style="border:2px solid black;">

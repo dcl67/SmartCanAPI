@@ -6,4 +6,4 @@ from . import models
 # Register your models here.
 admin.site.register(models.CanInfo)
 admin.site.register(models.Bin)
-admin.site.register(models.Owners)
+#admin.site.register(models.Owners)

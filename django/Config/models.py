@@ -5,11 +5,9 @@ from VoteHandler.models import Category, Disposable
 
 class CanInfo(models.Model):
     can_id = models.UUIDField(verbose_name='Smartcan ID', unique=True)
+    owner = models.OneToOneField(User, on_delete=models.CASCADE, null=True, default=None)
     channel_name = models.CharField(max_length=255, null=True, default=None)
-    config = models.TextField(max_length=4096) # Do we want three model fields for each of the disposal bins?
-    # We can also build these out with 
-    # Bin1 = forms.ChoiceField(choices=<disposable methods>, widget=forms.RadioSelect())
-    # Or checkboxes to say "This box takes these fields!" Thinking aloud.
+    config = models.TextField(max_length=4096)
 
     @staticmethod
     def new_can_id():
@@ -39,9 +37,9 @@ class Bin(models.Model):
     class Meta:
         unique_together = (("sId", "category"),)
 
-class Owners(models.Model):
-    owner = models.OneToOneField(User, on_delete=models.CASCADE)
-    sId = models.ForeignKey(CanInfo, on_delete=models.CASCADE)
-
-    class Meta:
-        unique_together = (("owner","sId"),)
+#class Owners(models.Model):
+#    owner = models.OneToOneField(User, on_delete=models.CASCADE)
+#    sId = models.ForeignKey(CanInfo, on_delete=models.CASCADE)
+#
+#    class Meta:
+#        unique_together = (("owner","sId"),)

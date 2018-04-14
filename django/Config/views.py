@@ -2,15 +2,18 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic.detail import DetailView
+from django.views.generic.edit import UpdateView
 import json
 import os.path
 
 
 from .models import CanInfo, Bin
-from .forms import ConfigurationForm
+from .forms import ConfigurationForm, CanConfigurationForm
+
 
 def home(request):
     return render(request, 'landing.html')
+
 
 def configlist(request):
     can_id = request.POST.get('can_id')
@@ -23,12 +26,19 @@ def configlist(request):
 
     return render(request, 'list.html', {'bins': bins, 'can': can })
 
-def configure(request, smartcan_id):
+
+def configure_can(request, pk):
     # Skeleton getters for now, we can build these out once we define 
     # the SmartCan's models for identifying each unit
-    instance=get_object_or_404(CanInfo, pk=smartcan_id)
-    form=ConfigurationForm(request.POST or None, instance=instance)
-    print(form)
+    instance=get_object_or_404(CanInfo, pk=pk)
+    form=CanConfigurationForm(request.POST or None, instance=instance)
+    if form.is_valid():
+        can_id = form.cleaned_data['can_id']
+        owner = form.cleaned_data['owner']
+        form.save()
+        return HttpResponseRedirect(reverse('Config:configlist'))
+    return render(request,'edit.html',{'form':form})
+
 
 
 def configure_bins(request):
@@ -45,6 +55,12 @@ def configure_bins(request):
     return render(request,'configure.html', {'form':form})
 
 
+class UpdateUser(UpdateView):
+    model = Bin
+    fields = 'owner'
+    template_name = 'edit.html'
+
+
 def edit_bin(request, pk):
     bin_config = get_object_or_404(Bin, pk=pk)
     form = ConfigurationForm(request.POST, instance=bin_config)
@@ -56,22 +72,27 @@ def edit_bin(request, pk):
         return HttpResponseRedirect(reverse('Config:config_detail', kwargs={'pk':pk}))
     return render(request,'configure.html',{'form':form})
 
+
 #def config_detail(request,pk):
 class config_detail(DetailView):
     model = Bin
     template_name='info.html'
 
+
 def submit_configuration(request, smartcanid):
     return HttpResponseRedirect(str(smartcanid)+'/configure/')
 
+
 def statistics(request, smartcanid):
     instance=get_object_or_404(CanInfo, pk=smartcanid)
+
 
 def registerhtml(request):
     """
     Hosting for the front end of registration
     """
     return render(request, 'register.html')
+
 
 def register(request, can_id):
     """
@@ -93,8 +114,10 @@ def register(request, can_id):
         i+=1
     return HttpResponseRedirect(reverse('Config:configlist'))
 
+
 def redirect(request, smartcanid):
     return HttpResponseRedirect(str(smartcanid)+'/register/')
+
 
 def json_reader(request):
     my_path = os.path.abspath(os.path.dirname(__file__))

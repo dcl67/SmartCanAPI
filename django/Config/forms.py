@@ -8,3 +8,8 @@ class ConfigurationForm(forms.ModelForm):
     class Meta:
         model = Bin
         fields = '__all__'
+
+class CanConfigurationForm(forms.ModelForm):
+    class Meta:
+        model = CanInfo
+        fields = '__all__'
