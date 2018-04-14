@@ -38,5 +38,8 @@
     copy the files "pythoncom35.dll" and "pythoncom35.dll" to the folder from
     step 2.
     
-
+### Running Django on Mac
+  1) brew install mysql
+  2) export PATH=$PATH:/usr/local/mysql/bin
+  3) brew install portaudio
     
