@@ -41,5 +41,5 @@
 ### Running Django on Mac
   1) brew install mysql
   2) export PATH=$PATH:/usr/local/mysql/bin
-  3) pip install MySQL-Python
+  3) brew install portaudio
     
