@@ -1,11 +1,12 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import UpdateView
+
 import json
 import os.path
-
 
 from .models import CanInfo, Bin
 from .forms import ConfigurationForm, CanConfigurationForm
@@ -15,6 +16,7 @@ def home(request):
     return render(request, 'landing.html')
 
 
+@login_required
 def configlist(request):
     can_id = request.POST.get('can_id')
     if not can_id:
@@ -23,10 +25,10 @@ def configlist(request):
         )
     bins = Bin.objects.filter(sId__can_id=can_id)
     can = CanInfo.objects.get(can_id=can_id)
-
     return render(request, 'list.html', {'bins': bins, 'can': can })
 
 
+@login_required
 def configure_can(request, pk):
     # Skeleton getters for now, we can build these out once we define 
     # the SmartCan's models for identifying each unit
@@ -40,7 +42,7 @@ def configure_can(request, pk):
     return render(request,'edit.html',{'form':form})
 
 
-
+@login_required
 def configure_bins(request):
     form = ConfigurationForm(request.POST)
     if request.method == 'POST':
@@ -55,12 +57,7 @@ def configure_bins(request):
     return render(request,'configure.html', {'form':form})
 
 
-class UpdateUser(UpdateView):
-    model = Bin
-    fields = 'owner'
-    template_name = 'edit.html'
-
-
+@login_required
 def edit_bin(request, pk):
     bin_config = get_object_or_404(Bin, pk=pk)
     form = ConfigurationForm(request.POST, instance=bin_config)
@@ -73,17 +70,21 @@ def edit_bin(request, pk):
     return render(request,'configure.html',{'form':form})
 
 
-#def config_detail(request,pk):
 class config_detail(DetailView):
     model = Bin
     template_name='info.html'
 
 
+@login_required
 def submit_configuration(request, smartcanid):
     return HttpResponseRedirect(str(smartcanid)+'/configure/')
 
 
+@login_required
 def statistics(request, smartcanid):
+    """
+    Tabled for now
+    """
     instance=get_object_or_404(CanInfo, pk=smartcanid)
 
 
@@ -94,6 +95,7 @@ def registerhtml(request):
     return render(request, 'register.html')
 
 
+@login_required
 def register(request, can_id):
     """
     Back-end to handle registration of a Smart Can
@@ -115,6 +117,7 @@ def register(request, can_id):
     return HttpResponseRedirect(reverse('Config:configlist'))
 
 
+@login_required
 def redirect(request, smartcanid):
     return HttpResponseRedirect(str(smartcanid)+'/register/')
 

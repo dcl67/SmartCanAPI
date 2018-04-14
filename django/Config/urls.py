@@ -10,7 +10,6 @@ urlpatterns = [
     path('configlist/', views.configlist, name='configlist'),
     path('configlist/<int:pk>', views.configure_can, name='configure_can'), 
     path('<int:smartcan_id>/configure/submit', views.submit_configuration, name='submit_configure'), # submit view for configure not yet defined
-    path('configlist/user', views.UpdateUser, name='edit_user'),
     path('configlist/bin', views.configure_bins, name='configure_bin'),
     path('configlist/bin/<int:pk>', views.config_detail.as_view(), name='config_detail'),
     path('configlist/bin/edit/<int:pk>', views.edit_bin, name='edit_bin'),
