@@ -5,7 +5,7 @@
 
 - Django 2.1 
 
-- Python 3.5
+- Python 3.6
 
 ## Main endpoints
 
@@ -13,6 +13,15 @@
  - Config is at http://IP:8000/config
  - websocket is at ws://IP:8000/ws 
 
+## Linting
+
+ - pip install pylint-django
+ - Add this to your VS Code settings:
+  ```json
+  python.linting.pylintArgs": [
+        "--load-plugins=pylint_django"
+    ]
+  ```
 
 ## Misc. Install Notes
 
@@ -41,5 +50,5 @@
 ### Running Django on Mac
   1) brew install mysql
   2) export PATH=$PATH:/usr/local/mysql/bin
-  3) pip install MySQL-Python
+  3) brew install portaudio
     
