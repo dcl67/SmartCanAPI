@@ -3,12 +3,14 @@ import os.path
 import random
 import secrets
 import string
+import uuid
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import UpdateView
 
@@ -27,7 +29,7 @@ def configlist(request):
         return render(request, 'landing.html',
                       {'error_message' : 'Please enter your UUID.'}
                      )
-    bins = Bin.objects.filter(sId__can_id=can_id)
+    bins = Bin.objects.filter(s_id__can_id=can_id)
     can = CanInfo.objects.get(can_id=can_id)
     return render(request, 'list.html', {'bins': bins, 'can': can})
 
@@ -51,10 +53,10 @@ def configure_bins(request):
     form = ConfigurationForm(request.POST)
     if request.method == 'POST':
         if form.is_valid():
-            sId = form.cleaned_data['sId']
+            s_id = form.cleaned_data['s_id']
             bin_num = form.cleaned_data['bin_num']
             category = form.cleaned_data['category']
-            new_bin = Bin.objects.create(sId=sId, bin_num=bin_num, category=category,)
+            new_bin = Bin.objects.create(s_id=s_id, bin_num=bin_num, category=category,)
             return HttpResponseRedirect(reverse('Config:config_detail', args=(new_bin.id,)))
     else:
         form = ConfigurationForm()
@@ -99,32 +101,38 @@ def registerhtml(request):
     return render(request, 'register.html')
 
 
+@csrf_exempt
 @login_required
 def register(request, can_id):
     """
-    POST: 
-        Creates a bin object with empty bins that is owned by the 
+    POST:
+        Creates a bin object with empty bins that is owned by the
         logged in account and creates an account for the can.
-    
+
     Arguments:
         can_id {uuid} -- The uuid that doubles as the can ID of the can you
                          want to register
-    
+
     Returns:
         [JSONResponse] -- Contains the password for the newly created can a
                           count
     """
 
     if request.method == 'POST':
-        # Create bin object
-        can_uuid = can_id
-        num_bins = int(request.POST.get('num_bins'))
+        can_uuid = uuid.UUID(str(can_id)).hex
+        num_bins = int(request.POST.get('num_bins', 3))
         owner = request.user
-        CanInfo.objects.create(can_id=can_uuid, owner=owner)
+
+        # Check can doesn't already exist
+        if CanInfo.objects.filter(can_id=can_uuid).exists():
+            return JsonResponse({'error': f'Can {can_uuid} is already registered'})
+
+        # Create bin object
+        new_can = CanInfo.objects.create(can_id=can_uuid, owner=owner)
 
         # Populate bins
         for i in range(num_bins):
-            Bin.objects.create(s_id=can_uuid, bin_num=i, category=None)
+            Bin.objects.create(s_id=new_can, bin_num=i, category=None)
 
         # Generate random pw, 12-16 chars, using letters, digits, and symbols
         pw_chars = string.ascii_letters + string.digits + string.punctuation
