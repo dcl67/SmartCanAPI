@@ -1,4 +1,5 @@
 { 
     "uuid": "00000000-0000-0000-0000-000000000000",
-    "num_bins": 3
+    "num_bins": 3,
+    "pass": "sample_password"
 } 
