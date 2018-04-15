@@ -9,33 +9,24 @@ class CanInfo(models.Model):
     channel_name = models.CharField(max_length=255, null=True, default=None)
     config = models.TextField(max_length=4096)
 
-    @staticmethod
-    def new_can_id():
-        """Returns a random uuid that is not alredy being used as an ID"""
-        id = uuid.uuid4();
-        # Odds are astronomically low of this actually colliding. Do we need this check?
-        while CanInfo.objects.filter(can_id=uuid).exists():
-            id = uuid.uuid4()
-        return id
-
     def __str__(self):
         return str(self.can_id)
-    
+
     def __unicode__(self):
         return self.user.get_full_name()
 
 class Bin(models.Model):
-    sId = models.ForeignKey(CanInfo, on_delete=models.CASCADE)
+    s_id = models.ForeignKey(CanInfo, on_delete=models.CASCADE, db_column='s_id')
     bin_num = models.CharField(max_length=15)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True)
     #accepted_item1 = models.ForeignKey(Disposable, null=False, blank=False)
     # For proof of concept, but will probably remove these
-    
+
     def __str__(self):
-        return str(self.bin_num) + " in " + str(self.sId)
-    
+        return str(self.bin_num) + " in " + str(self.s_id)
+
     class Meta:
-        unique_together = (("sId", "category"),)
+        unique_together = (("s_id", "category"),)
 
 #class Owners(models.Model):
 #    owner = models.OneToOneField(User, on_delete=models.CASCADE)
