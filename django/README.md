@@ -17,10 +17,11 @@
 
  - Install pylint-django
  - Add this to your VS Code settings:
-  '''json
+  ```json
   python.linting.pylintArgs": [
         "--load-plugins=pylint_django"
-    ]'''
+    ]
+  ```
 
 ## Misc. Install Notes
 
