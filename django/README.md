@@ -5,7 +5,7 @@
 
 - Django 2.1 
 
-- Python 3.5
+- Python 3.6
 
 ## Main endpoints
 
@@ -13,6 +13,14 @@
  - Config is at http://IP:8000/config
  - websocket is at ws://IP:8000/ws 
 
+## Linting
+
+ - Install pylint-django
+ - Add this to your VS Code settings:
+  '''json
+  python.linting.pylintArgs": [
+        "--load-plugins=pylint_django"
+    ]'''
 
 ## Misc. Install Notes
 
