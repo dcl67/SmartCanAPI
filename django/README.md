@@ -15,7 +15,7 @@
 
 ## Linting
 
- - Install pylint-django
+ - pip install pylint-django
  - Add this to your VS Code settings:
   ```json
   python.linting.pylintArgs": [
