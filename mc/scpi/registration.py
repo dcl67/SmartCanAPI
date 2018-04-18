@@ -8,31 +8,33 @@ import requests
 
 class Registration():
     """A class for registering a can with the django server.
-    
+
     Raises:
         UserWarning -- Warns if config cannot be saved to disk
     """
 
     # TODO: Update with public address
-    def __init__(self, config_file_name: str='config.json', 
-                 hostname: str='localhost'):
-        """        
+    def __init__(self, config_file_name: str = 'config.json',
+                 hostname: str = 'localhost'):
+        """
         Keyword Arguments:
-            config_file_name {str} -- File name, should contain extension. (default: {'config.json'})
-            hostname {str} -- The API hostname, should not contain protocol or port. (default: {'localhost'})
+            config_file_name {str} -- File name, should contain extension.
+                                      (default: {'config.json'})
+            hostname {str} -- The API hostname, should not contain protocol or port.
+                              (default: {'localhost'})
         """
 
         self.config = None
         self.config_file_name = config_file_name
         self.hostname = hostname
 
-    def create_config(self, b_uuid: uuid.UUID=None, num_bins: int=3):
+    def create_config(self, b_uuid: uuid.UUID = None, num_bins=3):
         """Tries to create a new config and save it to disk.
-        
+
         Keyword Arguments:
             b_uuid {uuid.UUID} -- The bin's UUID that doubles as its username (default: {None})
             num_bins {int} -- The number of bins that the can has (default: {3})
-        
+
         Returns:
             Bool -- True if the config was saved to disk, False otherwise.
         """
@@ -46,9 +48,9 @@ class Registration():
 
     def is_registered(self):
         """Determines if the smartcan is registered.
-        
+
         Returns:
-            Bool -- True if registered (config file exists and contains a pw), 
+            Bool -- True if registered (config file exists and contains a pw),
                     otherwise False
         """
 
@@ -85,7 +87,7 @@ class Registration():
         can_pw = r.json()['password']
         self.config['pass'] = can_pw
         self.try_save_config()
-        
+
     def try_load_config(self):
         '''
         Loads the JSON config file.
@@ -104,7 +106,7 @@ class Registration():
     def try_save_config(self):
         """
         Tries to save the current config to disk at config_file_name.
-        
+
         Returns:
             Bool -- True if the config was saved, False otherwise
         """
@@ -120,7 +122,7 @@ class Registration():
 def main():
     '''
     Script goes throught the registration process. The script will first authenticate
-    with owner credentials. The can will recieve its newly created credentials 
+    with owner credentials. The can will recieve its newly created credentials
     from the server as a response from the register POST.
     '''
     registration = Registration()
