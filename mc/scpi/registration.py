@@ -3,6 +3,7 @@ import json
 import os
 import sys
 import uuid
+from typing import Tuple
 
 import requests
 
@@ -23,28 +24,9 @@ class Registration():
             hostname {str} -- The API hostname, should not contain protocol or port.
                               (default: {'localhost'})
         """
-
         self.config = None
         self.config_file_name = config_file_name
         self.hostname = hostname
-
-    def create_config(self, b_uuid: uuid.UUID = None, num_bins=3):
-        """Tries to create a new config and save it to disk.
-
-        Keyword Arguments:
-            b_uuid {uuid.UUID} -- The bin's UUID that doubles as its username (default: {None})
-            num_bins {int} -- The number of bins that the can has (default: {3})
-
-        Returns:
-            Bool -- True if the config was saved to disk, False otherwise.
-        """
-
-        if not b_uuid:
-            b_uuid = uuid.uuid4()
-
-        config = {'uuid': str(b_uuid), 'num_bins': num_bins}
-        self.config = config
-        return self.try_save_config()
 
     def is_registered(self):
         """Determines if the smartcan is registered.
@@ -53,14 +35,18 @@ class Registration():
             Bool -- True if registered (config file exists and contains a pw),
                     otherwise False
         """
-
         return self.try_load_config() and self.config['pass'] != None
 
     # TODO: See if there is a way to do this securely
-    def prompt_owner_creds(self):
-        '''
-        Returns a tuple of the owner's credentials as input by the user.
-        '''
+    def prompt_owner_creds(self) -> Tuple[str, str]:
+        """Returns a tuple of the owner's credentials as input by the user.
+
+        Raises:
+            UserWarning -- From getpass, if password will be shown on terminal
+
+        Returns:
+            Tuple -- (username: str, password: str)
+        """
         print("A can owner's account credentials are required to register a can.")
         print(f"""This can will be registered as the user: '{self.config['uuid']}'""")
         print("Please enter the can owner's username and password below:")
@@ -69,13 +55,16 @@ class Registration():
         return (owner_user, owner_pw)
 
     def register(self):
-        '''
-        Creates a new registration on the server for the can.
-        Should be called after a config is generated.
-        '''
+        """Creates a new registration on the server for the can.
+
+        Note: Should be called after a config is generated.
+
+        Raises:
+            UserWarning -- Raised if config cannot be saved to disk
+        """
         if not self.try_load_config():
             print("No configuration found on disk, creating new configuration.")
-            if not self.create_config():
+            if not self.try_create_config():
                 raise UserWarning("Config could not be saved to disk.")
 
         endpoint = f'''config/register/submit/{self.config['uuid']}'''
@@ -88,11 +77,30 @@ class Registration():
         self.config['pass'] = can_pw
         self.try_save_config()
 
-    def try_load_config(self):
-        '''
-        Loads the JSON config file.
-        Returns True if config was successfully loaded, false otherwise
-        '''
+    def try_create_config(self, b_uuid: uuid.UUID = None, num_bins=3) -> bool:
+        """Tries to create a new config and save it to disk.
+
+        Keyword Arguments:
+            b_uuid {uuid.UUID} -- The bin's UUID that doubles as its username (default: {None})
+            num_bins {int} -- The number of bins that the can has (default: {3})
+
+        Returns:
+            bool -- True if the config was saved to disk, False otherwise.
+        """
+        if not b_uuid:
+            b_uuid = uuid.uuid4()
+
+        config = {'uuid': str(b_uuid), 'num_bins': num_bins}
+        self.config = config
+        return self.try_save_config()
+
+    def try_load_config(self) -> bool:
+        """
+        Tries to load the JSON config file.
+
+        Returns:
+            bool -- True if the config was loaded, False otherwise
+        """
         script_dir = os.path.dirname(os.path.realpath(sys.argv[0]))
         config_loc = os.path.join(script_dir, self.config_file_name)
 
@@ -103,14 +111,13 @@ class Registration():
         except:
             return False
 
-    def try_save_config(self):
+    def try_save_config(self) -> bool:
         """
         Tries to save the current config to disk at config_file_name.
 
         Returns:
-            Bool -- True if the config was saved, False otherwise
+            bool -- True if the config was saved, False otherwise
         """
-
         try:
             with open(self.config_file_name, 'w') as config_file:
                 json.dump(self.config, config_file)
@@ -120,11 +127,12 @@ class Registration():
 
 
 def main():
-    '''
+    """Does full registration process
+
     Script goes throught the registration process. The script will first authenticate
     with owner credentials. The can will recieve its newly created credentials
     from the server as a response from the register POST.
-    '''
+    """
     registration = Registration()
     if not registration.is_registered():
         registration.register()
