@@ -28,9 +28,7 @@ class CanInfo(models.Model):
 
     def __str__(self):
         return str(self.can_id)
-
-    def __unicode__(self):
-        return self.user.get_full_name()
+        
 
 class Bin(models.Model):
     """Model for bin ownership and category
