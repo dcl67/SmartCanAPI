@@ -1,10 +1,12 @@
-# -*- coding: utf-8 -*-
+"""Views for handling voting and categorization"""
+
 from __future__ import unicode_literals
 import urllib.parse
 
 from django.conf import settings
-from django.shortcuts import render, reverse, redirect, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, reverse, redirect
+from django.http import HttpResponseRedirect
+from django.views.decorators.http import require_POST
 
 from .forms import CategorizationForm
 from .models import Category, Disposable, DisposableVote
@@ -15,11 +17,11 @@ from .utils import votes_to_percentages
 def dispose(request):
     """View that receives POST requests for disposals from home's form"""
     try:
-        user_text = request.POST.get('disposable_item', '')
-        if not user_text:
+        user_text = request.POST.get('disposable_item')
+        if user_text is not None:
             return render(request, 'VoteHandler/home.html',
-                {'error_message' : 'Please enter text.'}
-            )
+                          {'error_message' : 'Please enter text.'}
+                         )
         disposeable = Disposable.objects.get(name=user_text.lower())
     except Disposable.DoesNotExist:
         # Create the object, so we have something to assosciate the votes with
@@ -39,9 +41,10 @@ def dispose(request):
 
     # TODO: This still feels gross, find a way to handle better
     return HttpResponseRedirect("{0}?{1}".format(
-        reverse('VoteHandler:result', args=(disposeable.id, top_category_id)), 
+        reverse('VoteHandler:result', args=(disposeable.id, top_category_id)),
         urllib.parse.urlencode(percentage_tuples)
         ))
+
 
 def categorize(request, disposable_name):
     """View that guides user to selecting the correct category"""
@@ -54,23 +57,27 @@ def categorize(request, disposable_name):
         initial = {'disposable': disposeable, 'count': settings.CATEGORIZE_VOTE_WEIGHT}
         form = CategorizationForm(initial=initial)
         votes = {v.category.name: v.count for v in disposeable.get_top_votes()}
-    return render(request, 'VoteHandler/categorize.html', 
-        {
-            'disposable_name': disposable_name,
-            'error_message': err_msg,
-            'form': form,
-            'votes': votes
-        }
-    )
+    return render(request, 'VoteHandler/categorize.html',
+                  {
+                      'disposable_name': disposable_name,
+                      'error_message': err_msg,
+                      'form': form,
+                      'votes': votes
+                  }
+                 )
+
 
 def home(request):
     """Simple landing page for text entry"""
     return render(request, 'VoteHandler/home.html')
 
+
 def result(request, disposable_name, category_name):
     """View that handles displaying the results of a dispose to the user"""
     votes = request.GET
-    return render(request, 'VoteHandler/result.html', 
+    return render(
+        request,
+        'VoteHandler/result.html',
         {
             'disposable_name': Disposable.objects.get(id=disposable_name).name,
             'category_name': Category.objects.get(id=category_name).name,
@@ -78,31 +85,32 @@ def result(request, disposable_name, category_name):
         }
     )
 
+
+@require_POST
 def vote(request):
+    """ POST endpoint for voting"""
     # TODO: POST adds the votes to that object
-    if request.method == 'POST':
-        form = CategorizationForm(request.POST)
-        if form.is_valid():
-            try:
-                # If we have an entry, update it
-                dv = DisposableVote.objects.get(disposable=form.cleaned_data['disposable'],
-                    category=form.cleaned_data['category']
-                )
-                dv.add_votes(form.cleaned_data['count'])
-            except (DisposableVote.DoesNotExist):
-                # save new instance
-                form.save()
-            return redirect('VoteHandler:home')
-        else:
-            err_msg = 'Form was rejected with error: {0}'.format(form.errors.as_json())
-            return render(request, 'VoteHandler/categorize.html', 
-                {
-                    'disposable_name' : request.POST.get('disposable_name',''),
-                    'error_message': err_msg,
-                    'form' : form,
-                }
+    form = CategorizationForm(request.POST)
+    if form.is_valid():
+        try:
+            # If we have an entry, update it
+            d_votes = DisposableVote.objects.get(
+                disposable=form.cleaned_data['disposable'],
+                category=form.cleaned_data['category']
             )
+            d_votes.add_votes(form.cleaned_data['count'])
+        except DisposableVote.DoesNotExist:
+            # save new instance
+            form.save()
+        return redirect('VoteHandler:home')
 
-
-# def from_speech(request):
-#     pass
+    err_msg = 'Form was rejected with error: {0}'.format(form.errors.as_json())
+    return render(
+        request,
+        'VoteHandler/categorize.html',
+        {
+            'disposable_name' : request.POST.get('disposable_name', ''),
+            'error_message': err_msg,
+            'form' : form,
+        }
+    )
