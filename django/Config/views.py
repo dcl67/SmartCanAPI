@@ -10,7 +10,6 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
-from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import UpdateView
 
@@ -101,7 +100,6 @@ def registerhtml(request):
     return render(request, 'register.html')
 
 
-@csrf_exempt
 @login_required
 def register(request, can_id):
     """
@@ -121,18 +119,13 @@ def register(request, can_id):
     if request.method == 'POST':
         can_uuid = uuid.UUID(str(can_id)).hex
         num_bins = int(request.POST.get('num_bins', 3))
+
+        # TODO: Add admin owner as someone with access over the can 
         owner = request.user
 
         # Check can doesn't already exist
         if CanInfo.objects.filter(can_id=can_uuid).exists():
             return JsonResponse({'error': f'Can {can_uuid} is already registered'})
-
-        # Create bin object
-        new_can = CanInfo.objects.create(can_id=can_uuid, owner=owner)
-
-        # Populate bins
-        for i in range(num_bins):
-            Bin.objects.create(s_id=new_can, bin_num=i, category=None)
 
         # Generate random pw, 12-16 chars, using letters, digits, and symbols
         pw_chars = string.ascii_letters + string.digits + string.punctuation
@@ -140,12 +133,19 @@ def register(request, can_id):
         pw_str = ''.join(secrets.choice(pw_chars) for _ in range(pw_len))
 
         # Create account for bin
-        User.objects.create_user(username=can_uuid, password=pw_str)
+        can_user = User.objects.create_user(username=can_uuid, password=pw_str)
+
+        # Create bin object owned by the new account
+        new_can = CanInfo.objects.create(can_id=can_uuid, owner=can_user)
+
+        # Populate bins
+        for i in range(num_bins):
+            Bin.objects.create(s_id=new_can, bin_num=i, category=None)
 
         return JsonResponse({'password': pw_str})
     else:
         # TODO: Direct to a manual entry form
-        pass
+        return "hi"
 
 
 @login_required
