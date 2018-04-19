@@ -1,18 +1,29 @@
+"""Utility functions for use with categorization and disposal
+
+Functions:
+    votes_to_percentages -- Returns a descending list of categories with
+        confidence percentages
+"""
+from typing import List, Tuple
+
 from django.conf import settings
+from django.db.models import QuerySet
 
-from .models import DisposableVote
+def votes_to_percentages(votes: QuerySet) -> List[Tuple[str, int]]:
+    """Returns a descending list of categories with confidence percentages
 
-def votes_to_percentages(QuerySet_votes):
-    """
-    Takes a QuerySet of DisposableVote and returns a list of categories 
-    with confidence percentages in of the form ('category', percentage) in 
-    descending order
+    Arguments:
+        votes {QuerySet} -- DisposableVotes to analyze
+
+    Returns:
+        List[Tuple[str, int]] -- list of categories with confidence percentages
+            in ('category', percentage) format
     """
     total = 0
-    for vote in QuerySet_votes:
+    for vote in votes:
         total += vote.count
     # If there are less than MIN_NORMALIZE_COUNT votes, treat it as less certain
-    if total < settings.MIN_NORMALIZE_COUNT: 
+    if total < settings.MIN_NORMALIZE_COUNT:
         total = settings.MIN_NORMALIZE_COUNT
-    d = {v.category.name: 100*v.count/total for v in QuerySet_votes} 
-    return sorted(d.items(), key=lambda x: x[1], reverse=True)
+    normalized_dict = {v.category.name: 100*v.count/total for v in votes}
+    return sorted(normalized_dict.items(), key=lambda x: x[1], reverse=True)
