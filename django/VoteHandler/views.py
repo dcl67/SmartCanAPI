@@ -18,7 +18,7 @@ def dispose(request):
     """View that receives POST requests for disposals from home's form"""
     try:
         user_text = request.POST.get('disposable_item')
-        if user_text is not None:
+        if user_text is None:
             return render(request, 'VoteHandler/home.html',
                           {'error_message' : 'Please enter text.'}
                          )
