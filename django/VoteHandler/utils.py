@@ -9,14 +9,14 @@ from typing import List, Tuple
 from django.conf import settings
 from django.db.models import QuerySet
 
-def votes_to_percentages(votes: QuerySet) -> List[Tuple[str, int]]:
+def votes_to_percentages(votes: QuerySet) -> List[Tuple[str, float]]:
     """Returns a descending list of categories with confidence percentages
 
     Arguments:
         votes {QuerySet} -- DisposableVotes to analyze
 
     Returns:
-        List[Tuple[str, int]] -- list of categories with confidence percentages
+        List[Tuple[str, float]] -- list of categories with confidence percentages
             in ('category', percentage) format
     """
     total = 0
