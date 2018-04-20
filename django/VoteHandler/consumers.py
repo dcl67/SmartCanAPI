@@ -1,6 +1,7 @@
 from channels.generic.websocket import JsonWebsocketConsumer
 
 # TODO: Import Config models
+from Config.models import CanInfo
 from .models import Category
 from .exceptions import ClientError
 
@@ -14,9 +15,13 @@ class CommanderConsumer(JsonWebsocketConsumer):
 
     CONFIG_IS_NONE = "CONFIG_IS_NONE"
 
+    def __init__(self):
+        super().__init__()
+        self.config = None
+
     ##### Websocket event handlers
 
-    def connect(self):
+    def connect(self) -> None:
         """
         Called when the ws is handshaking.
         """
@@ -26,7 +31,7 @@ class CommanderConsumer(JsonWebsocketConsumer):
         # We're going to want to keep the config accessible
         self.config = None
 
-    def receive_json(self, content):
+    def receive_json(self, content) -> None:
         """
         Called when we receive a text frame.
         Channels handles decoding the JSON and gives us it as content.
@@ -35,22 +40,22 @@ class CommanderConsumer(JsonWebsocketConsumer):
         """
         # Messages have a command we can switch on
         command = content.get("command", None)
-        
+
         try:
             if command == "config":
-                if self.config == None:
-                    raise ClientError(CONFIG_IS_NONE)
+                if self.config is None:
+                    raise ClientError(self.CONFIG_IS_NONE)
                 self.get_can_config()
             elif command == "identify_by_uuid":
                 self.config = self.get_config_by_uuid(content["uuid"])
 
             elif command == "echo":
                 self.echo(content["message"])
-        except ClientError as ce:
+        except ClientError as c_e:
             # send the error code to the can
-            self.send_json({"error": ce.code})
+            self.send_json({"error": c_e.code})
 
-    def disconnect(self, code):
+    def disconnect(self, code) -> None:
         try:
             self.remove_config_cn()
         except ClientError:
@@ -58,13 +63,13 @@ class CommanderConsumer(JsonWebsocketConsumer):
 
     ##### Helpers for receive_json
 
-    def get_can_config(self):
+    def get_can_config(self) -> str:
         """
         """
         # TODO: Figure out what info from self.config to send
         pass
 
-    def get_config_by_uuid(self, uuid):
+    def get_config_by_uuid(self, uuid) -> CanInfo:
         """
         Returns the config object with the matching uuid.
         Raises a ClientError if there is no matching uuid or if there is a
@@ -72,7 +77,7 @@ class CommanderConsumer(JsonWebsocketConsumer):
         """
         pass
 
-    def echo(self, message):
+    def echo(self, message: str) -> None:
         """
         Simply echos back a message so we can do simple testing.
         """
@@ -81,7 +86,7 @@ class CommanderConsumer(JsonWebsocketConsumer):
         })
 
     ##### Handlers for messages sent over the channel layer
-        # These helper methods are named by the types we send 
+        # These helper methods are named by the types we send
         # ex. chat.join becomes chat_join
         # They're how we receive messages from other consumers in django
 
@@ -95,7 +100,7 @@ class CommanderConsumer(JsonWebsocketConsumer):
         Raises ValueError if category is None.
         """
         if self.config is None:
-            raise ClientError(CONFIG_IS_NONE)
+            raise ClientError(self.CONFIG_IS_NONE)
         if category is None:
             raise ValueError("category cannot be None or empty")
         self.send_json({
