@@ -1,3 +1,21 @@
+{% load staticfiles %}
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+    .carousel-inner > .item > img,
+    .carousel-inner > .item > a > img {
+        width: 70%;
+        margin: auto;
+    }
+    img {
+      padding-left: 75px;
+    }
+    </style>
+</head>
+
 <h1>Results page</h1>
 
 <h2>SmartCan says '{{ disposable_name }}' is a '{{ category_name }}'!</h2>
@@ -15,3 +33,226 @@
 <form action="{% url 'VoteHandler:categorize' disposable_name %}" method="GET">
     <input type="submit" value="Categorize">
 </form>
+
+<div class="container">
+    <br>
+    <div id="myCarousel" class="carousel slide" data-ride="carousel">
+      <!-- Indicators -->
+      <ol class="carousel-indicators">
+        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+        <li data-target="#myCarousel" data-slide-to="1"></li>
+        <li data-target="#myCarousel" data-slide-to="2"></li>
+        <li data-target="#myCarousel" data-slide-to="3"></li>
+        <li data-target="#myCarousel" data-slide-to="4"></li>
+        <li data-target="#myCarousel" data-slide-to="5"></li>
+        <li data-target="#myCarousel" data-slide-to="6"></li>
+        <li data-target="#myCarousel" data-slide-to="7"></li>
+        <li data-target="#myCarousel" data-slide-to="8"></li>
+        <li data-target="#myCarousel" data-slide-to="9"></li>
+        <li data-target="#myCarousel" data-slide-to="10"></li>
+        <li data-target="#myCarousel" data-slide-to="11"></li>
+        <li data-target="#myCarousel" data-slide-to="12"></li>
+        <li data-target="#myCarousel" data-slide-to="13"></li>
+        <li data-target="#myCarousel" data-slide-to="14"></li>
+        <li data-target="#myCarousel" data-slide-to="15"></li>
+        <li data-target="#myCarousel" data-slide-to="16"></li>
+        <li data-target="#myCarousel" data-slide-to="17"></li>
+        <li data-target="#myCarousel" data-slide-to="18"></li>
+        <li data-target="#myCarousel" data-slide-to="19"></li>
+      </ol>
+  
+      <!-- Wrapper for slides -->
+      <div class="carousel-inner" role="listbox">
+        <!-- 1 -->
+        <div class="item active">
+          <a href="/#">
+          <img src="{% static 'img/Landfill.jpg'%}" alt="Chania" width="460" height="345">
+          <div class="carousel-caption">
+            <h3>Landfill</h3>
+            <p></p>
+          </div>
+          </a>
+        </div>
+        <!-- 2 -->
+        <div class="item">
+          <a href="/#">
+          <img src="{% static 'img/PlasticPLA.jpg'%}" alt="Chania" width="460" height="345">
+          <div class="carousel-caption">
+            <h3>Plastic PLA</h3>
+            <p></p>
+          </div>
+          </a>
+        </div>
+        <!-- 3 -->
+        <div class="item">
+          <a href="/#">
+          <img src="{% static 'img/Plastic6.jpg'%}" alt="Flower" width="460" height="345">
+          <div class="carousel-caption">
+            <h3>Plastic 6</h3>
+            <p></p>
+          </div>
+          </a>
+        </div>
+        <!-- 4 -->
+        <div class="item">
+          <a href="/#">
+          <img src="{% static 'img/Plastic5.jpg'%}" alt="Flower" width="460" height="345">
+          <div class="carousel-caption">
+            <h3>Plastic 5</h3>
+            <p></p>
+          </div>
+          </a>
+        </div>
+        <!-- 5 -->
+        <div class="item">
+          <a href="/#">
+          <img src="{% static 'img/Plastic4.jpg'%}" alt="Flower" width="460" height="345">
+          <div class="carousel-caption">
+            <h3>Plastic 4</h3>
+            <p></p>
+          </div>
+          </a>
+        </div>
+        <!-- 6 -->
+        <div class="item">
+                <a href="/#">
+                <img src="{% static 'img/Plastic3.jpg'%}" alt="Flower" width="460" height="345">
+                <div class="carousel-caption">
+                  <h3>Plastic 3</h3>
+                  <p></p>
+                </div>
+            </a>
+        </div>
+        <!-- 7 -->
+        <div class="item">
+                <a href="/#">
+                <img src="{% static 'img/Plastic2.jpg'%}" alt="Flower" width="460" height="345">
+                <div class="carousel-caption">
+                  <h3>Plastic 2</h3>
+                  <p></p>
+                </div>
+                </a>
+              </div>
+        <!-- 8 -->
+        <div class="item">
+                <a href="/#">
+                <img src="{% static 'img/Plastic1.jpg'%}" alt="Flower" width="460" height="345">
+                <div class="carousel-caption">
+                  <h3>Plastic 1</h3>
+                  <p></p>
+                </div>
+                </a>
+              </div>
+        <!-- 9 -->
+        <div class="item">
+                <a href="/#">
+                <img src="{% static 'img/Electronics.jpg'%}" alt="Flower" width="460" height="345">
+                <div class="carousel-caption">
+                  <h3>Electronics</h3>
+                  <p></p>
+                </div>
+                </a>
+              </div>
+        <!-- 10 -->
+        <div class="item active">
+            <a href="/#">
+                <img src="{% static 'img/Ceramic.jpg'%}" alt="Chania" width="460" height="345">
+                <div class="carousel-caption">
+                  <h3>Ceramic</h3>
+                  <p></p>
+                </div>
+            </a>
+        </div>
+        <!-- 11 -->
+        <div class="item">
+            <a href="/#">
+                <img src="{% static 'img/Chemical.jpg'%}" alt="Chania" width="460" height="345">
+                <div class="carousel-caption">
+                  <h3>Chemical</h3>
+                  <p></p>
+                </div>
+            </a>
+        </div>
+        <!-- 12 -->
+        <div class="item">
+            <a href="/#">
+                <img src="{% static 'img/Glass.jpg'%}" alt="Flower" width="460" height="345">
+                <div class="carousel-caption">
+                  <h3>Glass</h3>
+                  <p></p>
+                </div>
+            </a>
+        </div>
+        <!-- 13 -->
+        <div class="item">
+            <a href="/#">
+                <img src="{% static 'img/Metal.jpg'%}" alt="Flower" width="460" height="345">
+                <div class="carousel-caption">
+                  <h3>Metal</h3>
+                  <p></p>
+                </div>
+            </a>
+        </div>
+        <!-- 14 -->
+        <div class="item">
+            <a href="/#">
+                <img src="{% static 'img/OrganicCompost.jpg'%}" alt="Flower" width="460" height="345">
+                <div class="carousel-caption">
+                  <h3>Organic Compost</h3>
+                  <p></p>
+                </div>
+            </a>
+        </div>
+              <!-- 15 -->
+              <div class="item">
+                      <a href="/#">
+                      <img src="{% static 'img/Paper.jpg'%}" alt="Flower" width="460" height="345">
+                      <div class="carousel-caption">
+                        <h3>Paper</h3>
+                        <p></p>
+                      </div>
+                  </a>
+              </div>
+              <!-- 16 -->
+              <div class="item">
+                      <a href="/#">
+                      <img src="{% static 'img/Textile.jpg'%}" alt="Flower" width="460" height="345">
+                      <div class="carousel-caption">
+                        <h3>Textile</h3>
+                        <p></p>
+                      </div>
+                      </a>
+                    </div>
+              <!-- 17 -->
+              <div class="item">
+                      <a href="/#">
+                      <img src="{% static 'img/Unknown.jpg'%}" alt="Flower" width="460" height="345">
+                      <div class="carousel-caption">
+                        <h3>Unknown</h3>
+                        <p></p>
+                      </div>
+                      </a>
+                    </div>
+              <!-- 18 -->
+              <div class="item">
+                      <a href="/#">
+                      <img src="{% static 'img/Wood.jpg'%}" alt="Flower" width="460" height="345">
+                      <div class="carousel-caption">
+                        <h3>Wood</h3>
+                        <p></p>
+                      </div>
+                      </a>
+                    </div>
+    </div>
+  
+      <!-- Left and right controls -->
+      <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+        <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+      </a>
+    </div>
+  </div>
