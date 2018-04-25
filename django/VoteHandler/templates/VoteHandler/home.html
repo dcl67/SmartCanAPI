@@ -1,3 +1,27 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% comment %}
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <style>
+  .carousel-inner > .item > img,
+  .carousel-inner > .item > a > img {
+      width: 70%;
+      margin: auto;
+  }
+  img {
+    padding-left: 75px;
+  }
+  </style> 
+</head>
+{% endcomment %}
+
+{% block content %}
+
 <h1>Welcome to SmartCan!</h1>
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
@@ -8,3 +32,17 @@
     <input type="text" name="disposable_item" id="dispose_input" required>
     <input type="submit" id="dispose_submit" value="Enter">
 </form>
+
+    <p><h4>Or enter your desired bin number here: </h4></p> 
+
+      {% for b in bins %}
+      <div class="Bin_selection">
+        <a href="#" >
+          <h3 style="color:black;">Bin {{ b.bin_num }}</h3>
+        </a>{% comment %}TODO: New endpoint to dispose by bin, endpoint fires off request thru websocket{% endcomment %}
+      </div>
+
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

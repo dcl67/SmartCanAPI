@@ -4,13 +4,17 @@ from __future__ import unicode_literals
 import urllib.parse
 
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, reverse, redirect
 from django.http import HttpResponseRedirect
 from django.views.decorators.http import require_POST
 
+
 from .forms import CategorizationForm
 from .models import Category, Disposable, DisposableVote
 from .utils import votes_to_percentages
+
+from Config.models import CanInfo, Bin
 
 # TODO: Write some tests!
 
@@ -67,9 +71,13 @@ def categorize(request, disposable_name):
                  )
 
 
+@login_required
 def home(request):
     """Simple landing page for text entry"""
-    return render(request, 'VoteHandler/home.html')
+    logged_in_user = request.user
+    can_instance = CanInfo.objects.get(owner=logged_in_user)
+    bins = Bin.objects.filter(s_id__can_id=can_instance.can_id)
+    return render(request, 'VoteHandler/home.html', {'bins': bins })
 
 
 def result(request, disposable_name, category_name):
