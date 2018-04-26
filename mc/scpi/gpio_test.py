@@ -13,18 +13,17 @@ def setup():
     # Don't worry about other things going on on the board
     GPIO.setwarnings(False)
 
-def callback(channel):
-    print('Btn was pressed!')
-
-def main():
-    setup()
-
     # Setup event callback
     GPIO.add_event_detect(BTN_CHAN, GPIO.RISING, callback=callback,
                             bouncetime=50)
 
-    while True:
-        pass
+
+def callback(channel: int):
+    print(f'Btn was pressed on channel #{channel}!')
+
+
+def main():
+    setup()
 
     # Be nice and cleanup
     GPIO.cleanup()
