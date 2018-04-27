@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 import asyncio
 import json
+
+import signal
 import websockets
 
 from can_ws_client import CanWsClient
@@ -46,37 +48,54 @@ async def move_consumer(bin_q):#, lid_controller: LidController):
 #     return LidController(top_mc, btm_mc)
 
 
+async def handler_persistance_warpper(bin_q, config):
+    client = CanWsClient(bin_q, config, add_to_queue, 'localhost:8000/ws/')
+    while True:
+        print(f'Connecting to {client.hostname}')
+        try:
+            await client.handler()
+        except (websockets.exceptions.ConnectionClosed, ConnectionError) as ex:
+            print(f'Connection closed \'{ex}\'. Attempting to reconnect...')
+        except Exception as ex:
+            print(f'An exception occured: {ex}')
+        finally:
+            # Cooldown between retries, up to 10 minutes
+            client.cooldown = min(client.cooldown * 2, 600)
+            print(f'Cooling down for {client.cooldown} seconds')
+            await asyncio.sleep(client.cooldown)
+
+
 def main():
-    # Initialize devices
-    l_c = None #setup_lid_controller()
+    # This restores the Ctrl+C signal handler, normally the loop ignores it
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+    # TODO: uncomment
+    # # Initialize devices
+    # l_c = setup_lid_controller()
 
     # Initialize queue
     bin_q = asyncio.Queue()
 
-    # TODO: remove this test
-    tasks = [add_to_queue(bin_q, 1, 3), add_to_queue(bin_q, 2, 5), move_consumer(bin_q)]#, l_c)]
-    futures = [asyncio.ensure_future(task) for task in tasks]
+    # Registration
+    registration = Registration(config_file_name='test_config.json')
+    if not registration.is_registered():
+        registration.register()
+    config = registration.config
+
+    # TODO: Setup pedal events with GPIO
+
+    # TODO: add pedal listener
+    tasks = [move_consumer(bin_q),#, l_c), #TODO: uncomment
+             handler_persistance_warpper(bin_q, config),]
+    # schedule the tasks
+    for task in tasks:
+        asyncio.ensure_future(task)
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(asyncio.gather(*futures))
-    
-
-    # # Registration
-    # registration = Registration(config_file_name='test_config.json')
-    # if not registration.is_registered():
-    #     registration.register()
-    # config = registration.config
-
-    # # Client websocket for can
-    # client = CanWsClient(bin_q, config, add_to_queue, 'localhost:8000')
-
-    # # TODO: Setup pedal events with GPIO
-
-    # # TODO: add pedal listener
-    # tasks = [move_consumer(bin_q, l_c),
-    #          client.handler(),]
-    # futures = [asyncio.ensure_future(task) for task in tasks]
-    # loop = asyncio.get_event_loop()
-    # loop.run_until_complete(asyncio.gather(*futures))
+    # Debug mode to catch anything weird
+    loop.set_debug(True)
+    # Run event loop forever
+    loop.run_forever()
+    loop.close()
 
 
 if __name__ == '__main__':

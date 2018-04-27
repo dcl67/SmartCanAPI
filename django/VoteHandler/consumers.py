@@ -21,8 +21,8 @@ class CommanderConsumer(JsonWebsocketConsumer):
     NO_CONFIG_EXISTS = "NO_CONFIG_EXISTS"
     UNKNOWN_CMD = "UNKNOWN_COMMAND"
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, args):
+        super().__init__(args)
         self.config: dict = None
         self.user: User = None
 
@@ -30,8 +30,10 @@ class CommanderConsumer(JsonWebsocketConsumer):
 
     def connect(self) -> None:
         '''Called when the ws is handshaking'''
-        # Just accept any connection, we authenticate later
+        # Just accept any connection, then ask it to authenticate
         self.accept()
+        self.ask_for_identity()
+        print(f'Unknown client has connected on channel \'{self.channel_name}\'')
 
     def receive_json(self, content) -> None:
         """
@@ -49,11 +51,7 @@ class CommanderConsumer(JsonWebsocketConsumer):
             self.ask_for_identity()
 
         try:
-            if command == 'config':
-                if self.config is None:
-                    raise ClientError(self.CONFIG_IS_NONE)
-                self.get_can_config()
-            elif command == 'identify':
+            if command == 'identify':
                 self.identify(content)
             elif command == 'echo':
                 self.echo(content)
@@ -62,13 +60,16 @@ class CommanderConsumer(JsonWebsocketConsumer):
         except ClientError as c_e:
             # send the error code to the can
             self.send_json({'error': c_e.code})
+            if c_e.code == self.LOGIN_REJECTED:
+                self.disconnect(401)
 
     def disconnect(self, code) -> None:
-        print(f'Websocket #{self.channel_name} disconnected with code {code}')
-        try:
-            self.remove_config_cn()
-        except ClientError:
-            pass
+        print(f'Websocket \'{self.channel_name}\' disconnected with code {code}')
+        if self.authed():
+            try:
+                self.remove_config_cn()
+            except ClientError:
+                pass
 
     ##### Helpers for receive_json
 
@@ -84,15 +85,20 @@ class CommanderConsumer(JsonWebsocketConsumer):
         If the credentials are valid, self.user gets a value.
         Raises ClientError if credentials are invalid
         '''
-        uuid = content.get('username')
+        username = content.get('username')
         password = content.get('password')
+        
         # user is None if the login fails
-        self.user = authenticate(username=uuid, password=password)
+        self.user = authenticate(username=username, password=password)
 
+        # Kick them off, politely
         if not self.authed():
+            print(f'Unknown client failed to identify as {username}')
             raise ClientError(self.LOGIN_REJECTED)
 
+        print(f'Client successfully identified as {username}')
         self.set_config_cn()
+        self.send_info(f'Authentication as {username} was succesful')
 
     ##### Handlers for messages sent over the channel layer
 
@@ -145,6 +151,13 @@ class CommanderConsumer(JsonWebsocketConsumer):
             raise ClientError(self.NO_CONFIG_EXISTS)
         can_info.channel_name = None
         can_info.save()
+
+    def send_info(self, msg) -> None:
+        '''Sends an information sting to the client. Useful for debugging.'''
+        self.send_json({
+            "command": "info",
+            "message": msg
+        })
 
     def set_config_cn(self) -> None:
         """
