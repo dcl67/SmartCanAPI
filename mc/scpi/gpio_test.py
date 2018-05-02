@@ -1,4 +1,5 @@
 import asyncio
+from functools import partial
 try:
     import RPi.GPIO as GPIO
 except RuntimeError:
@@ -19,14 +20,16 @@ def setup_gpio(loop):
     GPIO.setwarnings(False)
 
     # Setup event callback
-    GPIO.add_event_detect(BTN_CHAN, GPIO.RISING, callback=lambda chan: loop.call_soon_threadsafe(intermediate_on_event_loop, channel=chan), bouncetime=20)
+    GPIO.add_event_detect(BTN_CHAN, GPIO.RISING,
+                          callback=lambda chan: loop.call_soon_threadsafe(partial(on_event_loop, channel=chan)),
+                          bouncetime=20)
 
 
 async def async_func(channel: int):
     print(f'Btn was pressed on channel #{channel}!')
 
 
-def intermediate_on_event_loop(channel: int):
+def on_event_loop(channel: int):
     asyncio.ensure_future(async_func(channel))
 
 
