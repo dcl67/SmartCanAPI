@@ -11,8 +11,9 @@ Setup
 4) run "pip install -r requirements.txt"
 
 ### Python 3.6 on the rPi
-- Follow the directions [here](https://raspberrypi.stackexchange.com/questions/59381/how-do-i-update-my-rpi3-to-python-3-6)
-- Replace the version number for python in the URL with 3.6.5
+1) Install the packages in the first answer [here](https://stackoverflow.com/questions/44290926/pip-cannot-confirm-ssl-certificate-ssl-module-is-not-available)
+2) Follow the directions [here](https://raspberrypi.stackexchange.com/questions/59381/how-do-i-update-my-rpi3-to-python-3-6)
+  - Replace the version number for python in the URL with 3.6.5
 
 Misc
 ----
