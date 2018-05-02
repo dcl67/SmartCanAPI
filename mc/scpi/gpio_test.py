@@ -31,7 +31,7 @@ async def async_func():
     print('Some async stuff')
 
 def intermediate_on_event_loop():
-    asyncio.ensure_future(async_func)
+    asyncio.ensure_future(async_func())
 
 
 def main():
