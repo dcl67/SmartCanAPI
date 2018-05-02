@@ -29,6 +29,8 @@
 
  - Redis needs to be installed and running on the local server for websockets
  - For *nix you can download Redis from [here](https://redis.io/download) and follow the install directions
+   1) To build, navigate to the download folder and type 'make'
+   2) To run Redis: 'cd src' then './redis-server'
  - For Windows download the .exe [here](https://github.com/MicrosoftArchive/redis/releases)
 
 ### Installing django channels on windows
