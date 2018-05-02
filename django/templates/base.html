@@ -29,8 +29,16 @@ The content block and div you have below.
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/slick.css' %}"/>
+
+
+{% comment %}	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> {% endcomment %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<script type="text/javascript" src="{% static 'js/slick.min.js' %}"></script>
+
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
 
@@ -51,5 +59,8 @@ The content block and div you have below.
 	<div class="footer">
 		<p> - </p> {% comment %} We can add some text here if we want! Our names, perhaps? {% endcomment %}
 	</div>
+
+
+
 </body>
 </html>
