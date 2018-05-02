@@ -20,8 +20,10 @@ def setup_gpio(loop):
     GPIO.setwarnings(False)
 
     # Setup event callback
-    GPIO.add_event_detect(BTN_CHAN, GPIO.RISING,
-                          callback=lambda chan: loop.call_soon_threadsafe(partial(on_event_loop, channel=chan)),
+    GPIO.add_event_detect(BTN_CHAN,
+                          GPIO.RISING,
+                          callback=lambda chan: loop.call_soon_threadsafe(
+                              partial(on_event_loop, channel=chan)),
                           bouncetime=20)
 
 
