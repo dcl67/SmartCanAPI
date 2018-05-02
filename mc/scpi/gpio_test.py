@@ -3,10 +3,15 @@ try:
     import RPi.GPIO as GPIO
 except RuntimeError:
     print("Error importing RPi.GPIO! Probably need to sudo this.")
+import signal
 
 BTN_CHAN = 40
 
-def setup():
+def setup_asyncio():
+    # This restores the Ctrl+C signal handler, normally the loop ignores it
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+def setup_gpio(loop):
     GPIO.setmode(GPIO.BOARD)
     GPIO.setup(BTN_CHAN, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
@@ -14,16 +19,29 @@ def setup():
     GPIO.setwarnings(False)
 
     # Setup event callback
-    GPIO.add_event_detect(BTN_CHAN, GPIO.RISING, callback=callback,
-                            bouncetime=50)
+    # TODO: GPIO.add_event_detect(BTN_CHAN, GPIO.RISING, callback=lambda _: callback2(loop, callback1), bouncetime=50)
+    GPIO.add_event_detect(BTN_CHAN, GPIO.RISING, callback=callback1,
+                          bouncetime=50)
 
 
-def callback(channel: int):
+def callback1(channel: int):
     print(f'Btn was pressed on channel #{channel}!')
+    
+
+def callback2(loop, callback):
+    if loop is None:
+        print(":(")
+        return       # should not come to this
+    loop.call_soon_threadsafe(callback)
 
 
 def main():
-    setup()
+    loop = asyncio.get_event_loop()
+
+    setup_asyncio()
+    setup_gpio(loop)
+
+    loop.run_forever()
 
     # Be nice and cleanup
     GPIO.cleanup()
