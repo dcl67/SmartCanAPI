@@ -19,20 +19,23 @@ def setup_gpio(loop):
     GPIO.setwarnings(False)
 
     # Setup event callback
-    # TODO: GPIO.add_event_detect(BTN_CHAN, GPIO.RISING, callback=lambda _: callback2(loop, callback1), bouncetime=50)
-    GPIO.add_event_detect(BTN_CHAN, GPIO.RISING, callback=callback1,
-                          bouncetime=50)
+    GPIO.add_event_detect(BTN_CHAN, GPIO.RISING, callback=lambda _: callback2(loop), bouncetime=50)
+    #GPIO.add_event_detect(BTN_CHAN, GPIO.RISING, callback=callback1,bouncetime=50)
 
 
 def callback1(channel: int):
     print(f'Btn was pressed on channel #{channel}!')
-    
 
-def callback2(loop, callback):
+
+def callback2(loop):
     if loop is None:
         print(":(")
         return       # should not come to this
-    loop.call_soon_threadsafe(callback)
+    asyncio.ensure_future(async_func)
+
+
+async def async_func():
+    print('Some async stuff')
 
 
 def main():
