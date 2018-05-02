@@ -27,18 +27,11 @@ def callback1(channel: int):
     print(f'Btn was pressed on channel #{channel}!')
 
 
-def callback2(loop):
-    if loop is None:
-        print(":(")
-        return       # should not come to this
-    asyncio.ensure_future(async_func)
-
-
 async def async_func():
     print('Some async stuff')
 
 def intermediate_on_event_loop():
-    asyncio.ensure_future(callback2)
+    asyncio.ensure_future(async_func)
 
 
 def main():
