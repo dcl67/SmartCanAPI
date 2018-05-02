@@ -10,6 +10,10 @@ Setup
 3) Activate the env with "source env/bin/activate"
 4) run "pip install -r requirements.txt"
 
+### Python 3.6 on the rPi
+- Follow the directions [here](https://raspberrypi.stackexchange.com/questions/59381/how-do-i-update-my-rpi3-to-python-3-6)
+- Replace the version number for python in the URL with 3.6.5
+
 Misc
 ----
 - The ".keep" files simply prevent the directory from being empty and therefore not kept in source due to how git treats empty folders.
