@@ -19,7 +19,7 @@ def setup_gpio(loop):
     GPIO.setwarnings(False)
 
     # Setup event callback
-    GPIO.add_event_detect(BTN_CHAN, GPIO.RISING, callback=lambda _: callback2(loop), bouncetime=50)
+    GPIO.add_event_detect(BTN_CHAN, GPIO.RISING, callback=lambda _: loop.call_soon_threadsafe(intermediate_on_event_loop), bouncetime=50)
     #GPIO.add_event_detect(BTN_CHAN, GPIO.RISING, callback=callback1,bouncetime=50)
 
 
@@ -36,6 +36,9 @@ def callback2(loop):
 
 async def async_func():
     print('Some async stuff')
+
+def intermediate_on_event_loop():
+    asyncio.ensure_future(callback2)
 
 
 def main():
