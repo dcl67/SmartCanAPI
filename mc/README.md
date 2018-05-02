@@ -10,6 +10,9 @@ Setup
 3) Activate the env with "source env/bin/activate"
 4) run "pip install -r requirements.txt"
 
+### Python 3.6 on the rPi
+- Follow the directions [here](https://stackoverflow.com/questions/41328451/ssl-module-in-python-is-not-available-when-installing-package-with-pip3)
+
 Misc
 ----
 - The ".keep" files simply prevent the directory from being empty and therefore not kept in source due to how git treats empty folders.
