@@ -117,6 +117,7 @@ def on_event_loop(bin_q, channel):
     This is called by the GPIO callback.
     """
     bin_num = CHAN_TO_BINS[channel]
+    print(f'Button press detected on channel {channel} for bin {bin_num}')
     asyncio.ensure_future(add_to_queue(bin_q, bin_num))
 
 
