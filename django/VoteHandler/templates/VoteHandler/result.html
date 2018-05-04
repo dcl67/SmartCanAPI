@@ -33,3 +33,11 @@
 <form action="{% url 'VoteHandler:categorize' disposable_name %}" method="GET">
     <input type="submit" value="Categorize">
 </form>
+
+<script type="text/javascript">
+    window.onload = function(){
+        setInterval(function(){
+            window.location.href= '/api/';
+        }, 10000);
+        };
+</script>
