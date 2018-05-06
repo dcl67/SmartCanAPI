@@ -28,7 +28,7 @@
 ### EC2
  - The package manager is yum
  1) `sudo yum groupinstall "Development Tools"` install gcc and other tools
- 2) `sudo yum install python34-devel` config for python development
+ 2) `sudo yum install python36-devel` config for python development
  2) Use yum to install python36
  3) Use python so install virtualenv, `sudo python3 -m pip virtualenv`
  - You'll want to use a virtual envirnoment like `virtualenv --python=/usr/lib/python3.6 env`
