@@ -21,7 +21,7 @@ class MotorController():
 
     def _setup_motor(self):
         """Initial signals to send to motor"""
-        io.setmode(GPIO.BOARD)
+        io.setmode(io.BOARD)
         io.setup(self.f_pin, io.OUT)
         io.setup(self.r_pin, io.OUT)
         # Set initial values for pins
