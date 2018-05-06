@@ -35,6 +35,7 @@
  1) Use yum to install python36
  1) Use python so install virtualenv, `sudo python3 -m pip virtualenv`
  - You'll want to use a virtual envirnoment like `virtualenv --python=/usr/lib/python3.6 env`
+ - To run django, use `./manage.py runserver 0.0.0.0:8000`
 
 ### Redis
 
