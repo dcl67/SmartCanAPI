@@ -145,7 +145,7 @@ def register(request, can_id):
         return JsonResponse({'password': pw_str})
     else:
         # TODO: Direct to a manual entry form
-        return "hi"
+        return HttpResponse("Manual Entry Form Goes Here")
 
 
 @login_required
