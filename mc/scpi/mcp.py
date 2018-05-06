@@ -14,7 +14,7 @@ import RPi.GPIO as GPIO
 from can_ws_client import CanWsClient
 from lid_controller import LidController
 from motor_controller import MotorController
-from registration import Registration
+from registration import Registration, HOSTNAME
 from resistor_reader import ResistorReader
 
 
@@ -95,7 +95,7 @@ async def handler_persistance_warpper(bin_q, config):
     Wraps the ws client in a wrapper that retries on disconnects and prints
     error messages rather than crashing
     """
-    client = CanWsClient(bin_q, config, add_to_queue, 'localhost:8000/ws/')
+    client = CanWsClient(bin_q, config, add_to_queue, f'{HOSTNAME}:8000/ws/')
     while True:
         print(f'Connecting to {client.hostname}')
         try:

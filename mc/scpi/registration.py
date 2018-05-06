@@ -22,7 +22,8 @@ import requests
 
 
 DJANGO_PORT = 8000
-HOSTNAME = 'http://localhost' # TODO: Set to HTTPS and public URL
+# TODO: Set to HTTPS
+HOSTNAME = 'http://ec2-34-203-249-228.compute-1.amazonaws.com'
 LOGIN_ENDPOINT = 'admin/login/'
 REGISTER_ENDPOINT = 'config/register/submit/'
 
