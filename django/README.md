@@ -25,6 +25,12 @@
 
 ## Misc. Install Notes
 
+### EC2
+ - The package manager is yum
+ 1) Use yum to install "Development Tools", python36, tmux (optional)
+ 2) Use python so install virtualenv, `sudo python3 -m pip virtualenv`
+ - You'll want to use a virtual envirnoment like `virtualenv --python=/usr/lib/python3.6 env`
+
 ### Redis
 
  - Redis needs to be installed and running on the local server for websockets
