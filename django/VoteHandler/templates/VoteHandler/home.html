@@ -1,24 +1,6 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 
-{% comment %}
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <style>
-  .carousel-inner > .item > img,
-  .carousel-inner > .item > a > img {
-      width: 70%;
-      margin: auto;
-  }
-  img {
-    padding-left: 75px;
-  }
-  </style> 
-</head>
-{% endcomment %}
 
 {% block content %}
 
@@ -35,14 +17,19 @@
 
     <p><h4>Or enter your desired bin number here: </h4></p> 
 
+  <table style="float:left;  border-left-width:25px">
+  <tr>
       {% for b in bins %}
-      <div class="Bin_selection">
-        <a href="#" >
-          <h3 style="color:black;">Bin {{ b.bin_num }}</h3>
-        </a>{% comment %}TODO: New endpoint to dispose by bin, endpoint fires off request thru websocket{% endcomment %}
-      </div>
-
+      <td>
+        <div class="Bin_selection" style="background: #f0f0f0; width: 10vw; height: 10vw; float: left;">
+          <a href="#" >
+            <h3 style="color:black;">Bin {{ b.bin_num }}</h3>
+          </a>{% comment %}TODO: New endpoint to dispose by bin, endpoint fires off request thru websocket{% endcomment %}
+        </div>
+      </td>
     {% endfor %}
+  </tr>
+  </table>
   </div>
 </div>
 {% endblock %}

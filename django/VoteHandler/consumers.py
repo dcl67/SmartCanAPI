@@ -21,8 +21,8 @@ class CommanderConsumer(JsonWebsocketConsumer):
     NO_CONFIG_EXISTS = "NO_CONFIG_EXISTS"
     UNKNOWN_CMD = "UNKNOWN_COMMAND"
 
-    def __init__(self, args):
-        super().__init__(args)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.config: dict = None
         self.user: User = None
 
