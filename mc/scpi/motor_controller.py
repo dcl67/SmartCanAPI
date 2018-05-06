@@ -3,10 +3,10 @@ import time
 
 import RPi.GPIO as io
 
-# TODO: Add logic for lower lid
+# TODO: Make sure we use the BOARD pin numbering
 class MotorController():
     """A class for controlling a motor attached the raspberry pi"""
-    def __init__(self, resistor_reader, fwd_pin=2, rev_pin=3, num_bins=3):
+    def __init__(self, resistor_reader, fwd_pin=3, rev_pin=5, num_bins=3):
         self.res_reader = resistor_reader
         self.f_pin = fwd_pin
         self.r_pin = rev_pin
@@ -21,8 +21,6 @@ class MotorController():
 
     def _setup_motor(self):
         """Initial signals to send to motor"""
-        # Set mode and set the pin modes
-        io.setmode(io.BCM)
         io.setup(self.f_pin, io.OUT)
         io.setup(self.r_pin, io.OUT)
         # Set initial values for pins
