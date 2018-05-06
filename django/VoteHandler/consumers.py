@@ -15,8 +15,8 @@ class CommanderConsumer(JsonWebsocketConsumer):
 
     CONFIG_IS_NONE = "CONFIG_IS_NONE"
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self,  *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.config = None
 
     ##### Websocket event handlers

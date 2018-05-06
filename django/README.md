@@ -25,6 +25,18 @@
 
 ## Misc. Install Notes
 
+### EC2
+ - The package manager is yum
+ - By default many dev packags aren't install
+ 1) `sudo yum install git`
+ 1) `sudo yum groupinstall "Development Tools"` install gcc and other tools
+ 1) `sudo yum install python36-devel` config for python development
+ 1) `sudo yum install mysql-devel` for mysqlclient
+ 1) Use yum to install python36
+ 1) Use python so install virtualenv, `sudo python3 -m pip virtualenv`
+ - You'll want to use a virtual envirnoment like `virtualenv --python=/usr/lib/python3.6 env`
+ - To run django, use `./manage.py runserver 0.0.0.0:8000`
+
 ### Redis
 
  - Redis needs to be installed and running on the local server for websockets
