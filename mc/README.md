@@ -13,6 +13,9 @@ Setup
 ### Python 3.6 on the rPi
 - Follow the directions [here](https://stackoverflow.com/questions/41328451/ssl-module-in-python-is-not-available-when-installing-package-with-pip3)
 
+### VPN on rPI
+- Connect to the drexel VPN using the instructions [here](https://cs.uwaterloo.ca/twiki/view/CF/OpenConnect)
+
 Misc
 ----
 - The ".keep" files simply prevent the directory from being empty and therefore not kept in source due to how git treats empty folders.
