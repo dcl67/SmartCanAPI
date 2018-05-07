@@ -54,7 +54,7 @@ class CanWsClient():
         await w_s.send(json_data)
 
     async def _rotate_handler(self, content):
-        pos = content.get('position')
+        pos = int(content.get('position'))
         await self.add_to_queue_coro(self.bin_q, pos)
 
     ##### Other funcs

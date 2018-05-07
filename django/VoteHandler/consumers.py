@@ -109,18 +109,18 @@ class CommanderConsumer(JsonWebsocketConsumer):
         # These will be called if we want to operate on our Consumer from
         # somewhere else in the application
 
-    def ws_rotate(self, category: Category):
+    def ws_rotate(self, event):
         """
         Send the bin number for the SmartCan to rotate to.
         Raises ClientError if there is no Config with bin info.
-        Raises ValueError if category is None.
+        Raises ValueError if there is no category field.
         """
         if self.config is None:
             raise ClientError(self.CONFIG_IS_NONE)
-        if category is None:
+        if event.category is None:
             raise ValueError("category cannot be None or empty")
         can_info = CanInfo.objects.get(owner=self.user)
-        bin_num = Bin.objects.get(s_id=can_info, category=category).bin_num
+        bin_num = Bin.objects.get(s_id=can_info, category=event.category).bin_num
         self.send_json({
             "command": "rotate",
             "position" : str(bin_num)
