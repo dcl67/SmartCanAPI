@@ -20,9 +20,9 @@ class LidController():
         """Moves the lids in an efficient manner to open the correct hole"""
         await self.top_mc.move_to_bin(bin_num)
 
-        left = (bin_num - 1) % bin_num
-        right = (bin_num + 1) % bin_num
         num_bins = self.btm_mc.num_bins
+        left = (bin_num - 1) % num_bins
+        right = (bin_num + 1) % num_bins
         right_pos = [x % num_bins for x in range(right, num_bins // 2 + right)]
         if self.btm_mc._curr_pos == left or self.btm_mc._curr_pos == right:
             return 
