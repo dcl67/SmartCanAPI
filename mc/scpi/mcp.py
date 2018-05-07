@@ -22,6 +22,11 @@ BTN_CHAN_0 = 40
 BTN_CHAN_1 = 38
 BTN_CHAN_2 = 36
 
+MTR_1_FWD = 37
+MTR_1_REV = 35
+MTR_2_FWD = 33
+MTR_2_REV = 31
+
 CHAN_TO_BINS = {
     40: 0,
     38: 1,
@@ -82,9 +87,9 @@ def setup_gpio(loop, bin_q):
 def setup_lid_controller():
     """Sets up the devices for the lid controller"""
     top_rr = ResistorReader(0)
-    top_mc = MotorController(top_rr, fwd_pin=2, rev_pin=3)
+    top_mc = MotorController(top_rr, fwd_pin=MTR_1_FWD, rev_pin=MTR_1_REV)
     btm_rr = ResistorReader(1)
-    btm_mc = MotorController(btm_rr, fwd_pin=4, rev_pin=5)
+    btm_mc = MotorController(btm_rr, fwd_pin=MTR_2_FWD, rev_pin=MTR_2_REV)
     return LidController(top_mc, btm_mc)
 
 
