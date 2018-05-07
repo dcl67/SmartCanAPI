@@ -160,19 +160,19 @@ def carousel_vote(request):
     data = request.POST
     disposable = data['disp_item']
     category_vote = data['vote']
-    #Sanity checking - delete later
-    print('Here is your item: {0}'.format(disposable))
-    print('Here is the vote I got! {0}'.format(category_vote))
 
     try:
         d_votes = DisposableVote.objects.get(
             disposable__name = disposable,
-            category__name = category_vote #ERR HERE
+            category__name = category_vote
         )
         print(d_votes)
         d_votes.add_votes(1)
     except DisposableVote.DoesNotExist:
-        print("Error- exiting")
-        #print('exiting carousel vote...')
+        new_object = DisposableVote.objects.create(
+            disposable__name = disposable,
+            category__name = category_vote,
+            count = 1
+        )
         return redirect('VoteHandler:home')
     return redirect('VoteHandler:home')
