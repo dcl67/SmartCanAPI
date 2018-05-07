@@ -141,8 +141,12 @@ def main():
 
     # Registration
     registration = Registration(config_file_name='test_config.json')
+    print('Checking registration...')
     if not registration.is_registered():
+        print('No registration found. Creating registration')
         registration.register()
+    else:
+        print('Registration found')
     config = registration.config
 
     # Setup pedal events with GPIO
@@ -159,6 +163,7 @@ def main():
     loop.set_debug(True)
 
     # Run event loop forever
+    print('Beginning event loop')
     loop.run_forever()
     loop.close()
 
