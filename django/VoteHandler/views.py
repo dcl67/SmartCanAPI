@@ -4,19 +4,21 @@ from __future__ import unicode_literals
 import urllib.parse
 import json
 
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, reverse, redirect
 from django.http import HttpResponseRedirect
+from django.shortcuts import render, reverse, redirect
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 
 
+from Config.models import CanInfo, Bin
 from .forms import CategorizationForm
 from .models import Category, Disposable, DisposableVote
 from .utils import votes_to_percentages
 
-from Config.models import CanInfo, Bin
 
 # TODO: Write some tests!
 
@@ -44,6 +46,25 @@ def dispose(request):
     percentage_tuples = votes_to_percentages(votes)
     if percentage_tuples[0][1] < settings.MIN_CONFIDENCE:
         return redirect('VoteHandler:categorize', disposable_name=user_text)
+
+    # Sends the bin number to the appropriate can if the request came from
+    # a logged in can
+    try:
+        can_info = CanInfo.objects.get(owner=request.user)
+    except (CanInfo.DoesNotExist):
+        pass
+    else:
+        request_channel = can_info.channel_name
+        channel_layer = get_channel_layer()
+        print(f'DEBUG: {can_info} {request_channel} {top_category_id}')
+        # Send msg to channel synchronously
+        async_to_sync(channel_layer.send)(
+            request_channel, 
+            { 
+                "type": "ws.rotate",
+                "category": top_category_id
+            }
+        )
 
     # TODO: This still feels gross, find a way to handle better
     return HttpResponseRedirect("{0}?{1}".format(
@@ -79,7 +100,7 @@ def home(request):
     logged_in_user = request.user
     can_instance = CanInfo.objects.get(owner=logged_in_user)
     bins = Bin.objects.filter(s_id__can_id=can_instance.can_id)
-    return render(request, 'VoteHandler/home.html', {'bins': bins })
+    return render(request, 'VoteHandler/home.html', {'bins': bins})
 
 
 def result(request, disposable_name, category_name):

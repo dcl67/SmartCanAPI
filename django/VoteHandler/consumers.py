@@ -23,7 +23,7 @@ class CommanderConsumer(JsonWebsocketConsumer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.config: dict = None
+        self.can_info: CanInfo = None
         self.user: User = None
 
     ##### Websocket event handlers
@@ -87,7 +87,7 @@ class CommanderConsumer(JsonWebsocketConsumer):
         '''
         username = content.get('username')
         password = content.get('password')
-        
+
         # user is None if the login fails
         self.user = authenticate(username=username, password=password)
 
@@ -97,7 +97,8 @@ class CommanderConsumer(JsonWebsocketConsumer):
             raise ClientError(self.LOGIN_REJECTED)
 
         print(f'Client successfully identified as {username}')
-        self.set_config_cn()
+        self.can_info = CanInfo.objects.get(owner=self.user)
+        self.set_channel_name()
         self.send_info(f'Authentication as {username} was succesful')
 
     ##### Handlers for messages sent over the channel layer
@@ -109,18 +110,23 @@ class CommanderConsumer(JsonWebsocketConsumer):
         # These will be called if we want to operate on our Consumer from
         # somewhere else in the application
 
-    def ws_rotate(self, category: Category):
+    def ws_rotate(self, event):
         """
         Send the bin number for the SmartCan to rotate to.
         Raises ClientError if there is no Config with bin info.
-        Raises ValueError if category is None.
+        Raises ValueError if there is no category field.
         """
-        if self.config is None:
+        if self.can_info is None:
             raise ClientError(self.CONFIG_IS_NONE)
-        if category is None:
+        if event.get('category') is None:
             raise ValueError("category cannot be None or empty")
-        can_info = CanInfo.objects.get(owner=self.user)
-        bin_num = Bin.objects.get(s_id=can_info, category=category).bin_num
+        try:
+            category = event['category']
+            bin_num = Bin.objects.get(s_id=self.can_info, category=category).bin_num
+        except Bin.DoesNotExist:
+            print(f'Cannot find matching bin for category {category} on bin {self.can_info}')
+            return
+        print(f'DEBUG: Sending command to rotate to bin #{bin_num} on {self.channel_name}')
         self.send_json({
             "command": "rotate",
             "position" : str(bin_num)
@@ -144,13 +150,12 @@ class CommanderConsumer(JsonWebsocketConsumer):
     def remove_config_cn(self) -> None:
         """
         Removes the unique channel name from the Config for this can.
-        Raises a ClientError if there is not already a config set.
+        Raises a ClientError if there is not already a can_info set.
         """
-        can_info = CanInfo.objects.get(owner=self.user)
-        if can_info is None or can_info.channel_name is None:
+        if self.can_info is None or self.can_info.channel_name is None:
             raise ClientError(self.NO_CONFIG_EXISTS)
-        can_info.channel_name = None
-        can_info.save()
+        self.can_info.channel_name = None
+        self.can_info.save()
 
     def send_info(self, msg) -> None:
         '''Sends an information sting to the client. Useful for debugging.'''
@@ -159,13 +164,12 @@ class CommanderConsumer(JsonWebsocketConsumer):
             "message": msg
         })
 
-    def set_config_cn(self) -> None:
+    def set_channel_name(self) -> None:
         """
         Set the unique channel name from the Config for this can.
         Raises a ClientError if the operation fails.
         """
-        can_info = CanInfo.objects.get(owner=self.user)
-        if can_info is None:
+        if self.can_info is None:
             raise ClientError(self.NO_CONFIG_EXISTS)
-        can_info.channel_name = self.channel_name
-        can_info.save()
+        self.can_info.channel_name = self.channel_name
+        self.can_info.save()

@@ -6,3 +6,4 @@ channels==2.0.2
 channels_redis~=2.0
 pywin32==222; os_name=='nt'
 django-crispy-forms==1.7.2
+asgiref==2.3.0
