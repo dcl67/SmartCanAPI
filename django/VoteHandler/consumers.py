@@ -121,6 +121,7 @@ class CommanderConsumer(JsonWebsocketConsumer):
             raise ValueError("category cannot be None or empty")
         can_info = CanInfo.objects.get(owner=self.user)
         bin_num = Bin.objects.get(s_id=can_info, category=event.category).bin_num
+        print(f'DEBUG: Sending command to rotate to bin #{bin_num} on {self.channel_name}')
         self.send_json({
             "command": "rotate",
             "position" : str(bin_num)

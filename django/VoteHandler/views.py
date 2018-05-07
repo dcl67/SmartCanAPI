@@ -54,6 +54,7 @@ def dispose(request):
     else:
         request_channel = can_info.channel_name
         channel_layer = get_channel_layer()
+        print(f'DEBUG: {can_info} {request_channel} {top_category_id}')
         # Send msg to channel synchronously
         async_to_sync(channel_layer.send)(
             request_channel, 
