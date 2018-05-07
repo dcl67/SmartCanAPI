@@ -118,9 +118,9 @@ class CommanderConsumer(JsonWebsocketConsumer):
         """
         if self.can_info is None:
             raise ClientError(self.CONFIG_IS_NONE)
-        if event.category is None:
+        if event.get('category') is None:
             raise ValueError("category cannot be None or empty")
-        bin_num = Bin.objects.get(s_id=self.can_info, category=event.category).bin_num
+        bin_num = Bin.objects.get(s_id=self.can_info, category=event.['category']).bin_num
         print(f'DEBUG: Sending command to rotate to bin #{bin_num} on {self.channel_name}')
         self.send_json({
             "command": "rotate",
