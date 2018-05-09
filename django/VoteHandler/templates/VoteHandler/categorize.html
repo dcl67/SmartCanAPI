@@ -112,7 +112,6 @@
             <input type="image" src="{% static 'img/Wood.jpg'%}" onclick="imageVote('Wood')" alt="Submit" width="460" height="345" name="category" id="Wood">
             <div id="text" style="text-align: center; vertical-align: middle;">Wood</div>
         </div>
-        {% csrf_token %}
     </div>
 </p>
 <br>
@@ -139,13 +138,37 @@
 
         };*/
 
+        // CSRF Generation
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
 
         // If an image is clicked on
         function imageVote (category) {
+            var csrftoken = "{% csrf_token %}";
+
+            var csrfmidtoken = jQuery("[name=csrfmiddlewaretoken]").val();
+
+
+
             var item = "{{ disposable_name }}";
             var json_data = {
                 disp_item: item,
                 vote: category,
+                //CSRF: csrftoken,
+                csrfmiddlewaretoken: csrfmidtoken
             };
 
             $.ajax({
