@@ -23,6 +23,7 @@
 
 <h2>This page is for categorizing {{ disposable_name }}</h2>
 
+{% comment %}Deprecated, we should remove this.
 <p>
 {% if form %}
     <form  action="{% url 'VoteHandler:vote' %}" method="POST">
@@ -31,7 +32,7 @@
         <input type="submit" value="Submit">
     </form>
 {% endif %}
-</p>
+</p>{% endcomment %}
 
 <br>
 <p>
@@ -58,7 +59,7 @@
         </div>
         <div>
             <input type="image" src="{% static 'img/Plastic4.jpg'%}" onclick="imageVote('Plastic #4')" alt="Submit" width="460" height="345" name="category" id="Plastic #4">
-            <div id="text" style="text-align: center; vertical-align: middle;">Plastic %4</div>
+            <div id="text" style="text-align: center; vertical-align: middle;">Plastic #4</div>
         </div>
         <div>
             <input type="image" src="{% static 'img/Plastic3.jpg'%}" onclick="imageVote('Plastic #3')" alt="Submit" width="460" height="345" name="category" id="Plastic #3">
@@ -167,7 +168,6 @@
             var json_data = {
                 disp_item: item,
                 vote: category,
-                //CSRF: csrftoken,
                 csrfmiddlewaretoken: csrfmidtoken
             };
 
