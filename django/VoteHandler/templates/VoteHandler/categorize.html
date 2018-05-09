@@ -32,68 +32,89 @@
     </form>
 {% endif %}
 </p>
+
 <br>
+<p>
     <div class="your-class">
-        {% csrf_token %}
         <div>
             <input type="image" src="{% static 'img/Landfill.jpg' %}" onclick="imageVote('Landfill')" alt="Submit" width="460" height="345" name="category" id="Landfill">
+            <div id="text" style="text-align: center; vertical-align: middle;">Landfill</div>
         </div>
         <div>
             <input type="image" src="{% static 'img/PlasticPLA.jpg'%}" onclick="imageVote('Plastic PLA')" alt="Submit" width="460" height="345" name="category" id="Plastic PLA">
+            <div id="text" style="text-align: center; vertical-align: middle;">Plastic PLA</div>
         </div>
         <div>
-            <input type="image" src="{% static 'img/Plastic7.jpg'%}" onclick="imageVote('Plastic #7')" alt="Submit" width="460" height="345" name="category" id="Plastic PLA">
+            <input type="image" src="{% static 'img/Plastic7.jpg'%}" onclick="imageVote('Plastic #7')" alt="Submit" width="460" height="345" name="category" id="Plastic #7">
+            <div id="text" style="text-align: center; vertical-align: middle;">Plastic #7</div>
         </div>
         <div>
             <input type="image" src="{% static 'img/Plastic6.jpg'%}" onclick="imageVote('Plastic #6')" alt="Submit" width="460" height="345" name="category" id="Plastic #6">
+            <div id="text" style="text-align: center; vertical-align: middle;">Plastic #6</div>
         </div>
         <div>
             <input type="image" src="{% static 'img/Plastic5.jpg'%}" onclick="imageVote('Plastic #5')" alt="Submit" width="460" height="345" name="category" id="Plastic #5">
+            <div id="text" style="text-align: center; vertical-align: middle;">Plastic #5</div>
         </div>
         <div>
             <input type="image" src="{% static 'img/Plastic4.jpg'%}" onclick="imageVote('Plastic #4')" alt="Submit" width="460" height="345" name="category" id="Plastic #4">
+            <div id="text" style="text-align: center; vertical-align: middle;">Plastic %4</div>
         </div>
         <div>
             <input type="image" src="{% static 'img/Plastic3.jpg'%}" onclick="imageVote('Plastic #3')" alt="Submit" width="460" height="345" name="category" id="Plastic #3">
+            <div id="text" style="text-align: center; vertical-align: middle;">Plastic #3</div>
         </div>
         <div>
             <input type="image" src="{% static 'img/Plastic2.jpg'%}" onclick="imageVote('Plastic #2')" alt="Submit" width="460" height="345" name="category" id="Plastic #2">
+            <div id="text" style="text-align: center; vertical-align: middle;">Plastic #2</div>
         </div>
         <div>
             <input type="image" src="{% static 'img/Plastic1.jpg'%}" onclick="imageVote('Plastic #1')" alt="Submit" width="460" height="345" name="category" id="Plastic #1">
+            <div id="text" style="text-align: center; vertical-align: middle;">Plastic #1</div>
         </div>
         <div>
             <input type="image" src="{% static 'img/Electronics.jpg'%}" onclick="imageVote('Electronic')" alt="Submit" width="460" height="345" name="category" id="Electronic">
+            <div id="text" style="text-align: center; vertical-align: middle;">Electronic</div>
         </div>
         <div>
             <input type="image" src="{% static 'img/Ceramic.jpg'%}" onclick="imageVote('Ceramic')" alt="Submit" width="460" height="345" name="category" id="Ceramic">
+            <div id="text" style="text-align: center; vertical-align: middle;">Ceramic</div>
         </div>
         <div>
             <input type="image" src="{% static 'img/Chemical.jpg'%}" onclick="imageVote('Chemical')" alt="Submit" width="460" height="345" name="category" id="Chemical">
+            <div id="text" style="text-align: center; vertical-align: middle;">Chemical</div>
         </div>
         <div>
             <input type="image" src="{% static 'img/Glass.jpg'%}" onclick="imageVote('Glass')" alt="Submit" width="460" height="345" name="category" id="Glass">
+            <div id="text" style="text-align: center; vertical-align: middle;">Glass</div>
         </div>
         <div>
             <input type="image" src="{% static 'img/Metal.jpg'%}" onclick="imageVote('Metal')" alt="Submit" width="460" height="345" name="category" id="Metal">
+            <div id="text" style="text-align: center; vertical-align: middle;">Metal</div>
         </div>
         <div>
             <input type="image" src="{% static 'img/OrganicCompost.jpg'%}" onclick="imageVote('Organic')" alt="Submit" width="460" height="345" name="category" id="Organic">
+            <div id="text" style="text-align: center; vertical-align: middle;">Organic Compost</div>
         </div>
         <div>
             <input type="image" src="{% static 'img/Paper.jpg'%}" onclick="imageVote('Paper')" alt="Submit" width="460" height="345" name="category" id="Paper">
+            <div id="text" style="text-align: center; vertical-align: middle;">Paper</div>
         </div>
         <div>
             <input type="image" src="{% static 'img/Textile.jpg'%}" onclick="imageVote('Textile')" alt="Submit" width="460" height="345" name="category" id="Textile">
+            <div id="text" style="text-align: center; vertical-align: middle;">Textile</div>
         </div>
         <div>
             <input type="image" src="{% static 'img/Unknown.jpg'%}" onclick="imageVote('Unknown')" alt="Submit" width="460" height="345" name="category" id="Unknown">
+            <div id="text" style="text-align: center; vertical-align: middle;">Unknown</div>
         </div>
         <div>
             <input type="image" src="{% static 'img/Wood.jpg'%}" onclick="imageVote('Wood')" alt="Submit" width="460" height="345" name="category" id="Wood">
+            <div id="text" style="text-align: center; vertical-align: middle;">Wood</div>
         </div>
     </div>
-
+</p>
+<br>
     
 {% comment %}    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script type="text/javascript" src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
@@ -113,7 +134,7 @@
         window.onload = function(){
             setInterval(function(){
                 window.location.href= '/api/';
-            }, 10000);
+            }, 10000); // 10 seconds
 
         };
 
