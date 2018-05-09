@@ -2,7 +2,6 @@
 
 from __future__ import unicode_literals
 import urllib.parse
-import json
 
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
@@ -11,16 +10,12 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, reverse, redirect
 from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import csrf_exempt
-
 
 from Config.models import CanInfo, Bin
 from .forms import CategorizationForm
 from .models import Category, Disposable, DisposableVote
 from .utils import votes_to_percentages
 
-
-# TODO: Write some tests!
 
 def dispose(request):
     """View that receives POST requests for disposals from home's form"""
@@ -34,7 +29,7 @@ def dispose(request):
     except Disposable.DoesNotExist:
         # Create the object, so we have something to assosciate the votes with
         new_disposable = Disposable(name=user_text)
-        new_disposable.save() # TODO: Error handling?
+        new_disposable.save()
         return redirect('VoteHandler:categorize', disposable_name=user_text)
 
     top_category = disposeable.get_top_category()
@@ -49,22 +44,21 @@ def dispose(request):
 
     # Sends the bin number to the appropriate can if the request came from
     # a logged in can
-    try:
-        can_info = CanInfo.objects.get(owner=request.user)
-    except (CanInfo.DoesNotExist):
-        pass
-    else:
+    can_info_set = CanInfo.objects.filter(owner=request.user)
+    if can_info_set.exists():
+        can_info = can_info_set.get()
         request_channel = can_info.channel_name
-        channel_layer = get_channel_layer()
-        print(f'DEBUG: {can_info} {request_channel} {top_category_id}')
-        # Send msg to channel synchronously
-        async_to_sync(channel_layer.send)(
-            request_channel, 
-            { 
-                "type": "ws.rotate",
-                "category": top_category_id
-            }
-        )
+        if request_channel is not None:
+            channel_layer = get_channel_layer()
+            print(f'DEBUG: {can_info} {request_channel} {top_category_id}')
+            # Send msg to channel synchronously
+            async_to_sync(channel_layer.send)(
+                request_channel,
+                {
+                    "type": "ws.rotate",
+                    "category": top_category_id
+                }
+            )
 
     # TODO: This still feels gross, find a way to handle better
     return HttpResponseRedirect("{0}?{1}".format(
@@ -120,7 +114,6 @@ def result(request, disposable_name, category_name):
 @require_POST
 def vote(request):
     """ POST endpoint for voting"""
-    # TODO: POST adds the votes to that object
     form = CategorizationForm(request.POST)
     if form.is_valid():
         try:
@@ -134,7 +127,6 @@ def vote(request):
             print(d_votes)
             d_votes.add_votes(form.cleaned_data['count'])
         except DisposableVote.DoesNotExist:
-            # save new instance
             form.save()
         return redirect('VoteHandler:home')
 
@@ -149,30 +141,21 @@ def vote(request):
         }
     )
 
-#@require_POST
-@csrf_exempt
+@require_POST
 def carousel_vote(request):
     """
-    A POST request for voting via images
+    A POST view for voting via images
     """
-
-    #Get JSON data
+    #Get disposable and category
     data = request.POST
-    disposable = data['disp_item']
-    category_vote = data['vote']
+    disposable = Disposable.objects.get(name=data['disp_item'])
+    category_vote = Category.objects.get(name=data['vote'])
 
-    try:
-        d_votes = DisposableVote.objects.get(
-            disposable__name = disposable,
-            category__name = category_vote
-        )
-        print(d_votes)
-        d_votes.add_votes(1)
-    except DisposableVote.DoesNotExist:
-        new_object = DisposableVote.objects.create(
-            disposable__name = disposable,
-            category__name = category_vote,
-            count = 1
-        )
-        return redirect('VoteHandler:home')
+    # Create with zero votes if it didn't exist
+    d_votes, _created = DisposableVote.objects.get_or_create(
+        disposable=disposable,
+        category=category_vote,
+        defaults={'count': 0}
+    )
+    d_votes.add_votes(1)
     return redirect('VoteHandler:home')
