@@ -112,6 +112,7 @@
             <input type="image" src="{% static 'img/Wood.jpg'%}" onclick="imageVote('Wood')" alt="Submit" width="460" height="345" name="category" id="Wood">
             <div id="text" style="text-align: center; vertical-align: middle;">Wood</div>
         </div>
+        {% csrf_token %}
     </div>
 </p>
 <br>
@@ -131,12 +132,12 @@
         });
 
         // Time-outs
-        window.onload = function(){
+        /*window.onload = function(){
             setInterval(function(){
                 window.location.href= '/api/';
             }, 10000); // 10 seconds
 
-        };
+        };*/
 
 
         // If an image is clicked on
