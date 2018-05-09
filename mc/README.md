@@ -16,6 +16,9 @@ Setup
 ### VPN on rPI
 - Connect to the drexel VPN using the instructions [here](https://cs.uwaterloo.ca/twiki/view/CF/OpenConnect)
 
+### Testing with ws
+The websocket code doesn't know what redis server you are on, so make sure that any testing you do involving the rPI has the rPI targeting the same redis server as your django server is connected to. In most cases this should mean just test against the EC2 server when dealing with websockets.
+
 Misc
 ----
 - The ".keep" files simply prevent the directory from being empty and therefore not kept in source due to how git treats empty folders.
