@@ -139,8 +139,12 @@ def register(request, can_id):
         new_can = CanInfo.objects.create(can_id=can_uuid, owner=can_user)
 
         # Populate bins
+        categories = Bin.DEFAULT_CATEGORIES
         for i in range(num_bins):
-            Bin.objects.create(s_id=new_can, bin_num=i, category=None)
+            if i < len(categories):
+                Bin.objects.create(s_id=new_can, bin_num=i, category=categories[i])
+            else:
+                Bin.objects.create(s_id=new_can, bin_num=i, category=None)
 
         return JsonResponse({'password': pw_str})
     else:

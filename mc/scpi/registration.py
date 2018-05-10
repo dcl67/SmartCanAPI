@@ -23,6 +23,7 @@ import requests
 
 DJANGO_PORT = 8000
 # TODO: Set to HTTPS
+PROTOCOL = 'http://'
 HOSTNAME = 'ec2-34-203-249-228.compute-1.amazonaws.com'
 LOGIN_ENDPOINT = 'admin/login/'
 REGISTER_ENDPOINT = 'config/register/submit/'
@@ -74,8 +75,10 @@ class Registration:
                  hostname: str = HOSTNAME):
         self.config = {}
         self.config_file_name = config_file_name
-        self.hostname = hostname
         self._try_load_config()
+        if not hostname.startswith(PROTOCOL):
+            hostname = PROTOCOL + hostname
+        self.hostname = hostname
 
     def is_registered(self) -> bool:
         """Determines if the smartcan is registered.

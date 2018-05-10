@@ -51,11 +51,19 @@ class Bin(models.Model):
     bin_num = models.CharField(max_length=15)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True)
 
+    # non-field property
+    DEFAULT_CATEGORIES =  [
+            Category.objects.get(name='Landfill'),
+            Category.objects.get(name='Organic'),
+            Category.objects.get(name='Unknown')
+        ]
+
     def __str__(self):
         return str(self.bin_num) + " in " + str(self.s_id)
 
     class Meta:
         unique_together = (("s_id", "category"),)
+
 
 # TODO: Re-add the owners table
 #class Owners(models.Model):
