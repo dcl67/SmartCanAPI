@@ -41,9 +41,14 @@ async def add_to_queue(bin_q, bin_num, delay_s=0):
     Add a bin number to the queue. Can specify a delay in seconds before adding
     the bin number to the queue.
     """
-    await asyncio.sleep(delay_s)
-    await bin_q.put(bin_num)
-    print(f'Added a request to move to bin #{bin_num}')
+    while True:
+        try:
+            await asyncio.sleep(delay_s)
+            await bin_q.put(bin_num)
+        except Exception as ex:
+            print(f"Failed to add 'move to bin #{bin_num}'. Error: {ex}")
+        else:
+            print(f"Added 'move to bin #{bin_num}' to queue")
 
 
 async def move_consumer(bin_q, lid_controller: LidController):
@@ -52,11 +57,16 @@ async def move_consumer(bin_q, lid_controller: LidController):
     Will yield and wait if the Queue is empty.
     """
     while True:
-        bin_num = await bin_q.get()
-        print(f"Consuming 'move to bin #{bin_num}' from queue'")
-        await lid_controller.open(bin_num)
-        await asyncio.sleep(10)
-        await lid_controller.close()
+        try:
+            bin_num = await bin_q.get()
+            await lid_controller.open(bin_num)
+        except Exception as ex:
+            print(f"Failed to 'move to bin #{bin_num}'. Error: {ex}")
+        else:
+            print(f"Succesful 'move to bin #{bin_num}'")
+        finally:
+            await asyncio.sleep(10)
+            await lid_controller.close()
 
 
 ##### Setup funcs
