@@ -113,6 +113,7 @@
             <input type="image" src="{% static 'img/Wood.jpg'%}" onclick="imageVote('Wood')" alt="Submit" width="460" height="345" name="category" id="Wood">
             <div id="text" style="text-align: center; vertical-align: middle;">Wood</div>
         </div>
+        {% csrf_token %}
     </div>
 </p>
 <br>
@@ -168,6 +169,7 @@
             var json_data = {
                 disp_item: item,
                 vote: category,
+                csrf:csrftoken,
                 csrfmiddlewaretoken: csrfmidtoken
             };
 
