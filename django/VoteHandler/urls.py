@@ -1,7 +1,6 @@
 from django.urls import path
 
 from . import views
-from VoteHandler.views import carousel_vote
 
 app_name = "VoteHandler"
 urlpatterns = [
@@ -13,4 +12,5 @@ urlpatterns = [
     path('vote', views.vote, name='vote'),
     path('vote/carousel', views.carousel_vote, name='carousel_vote'),
     #path('fromSpeech/', view.from_speech, name='from_speech'),
+    path('manual_rotate/<int:bin_num>', views.manual_rotate, name='manual_rotate')
 ]

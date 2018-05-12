@@ -22,22 +22,23 @@
     <input type="submit" id="dispose_submit" value="Enter">
 </form>
 
-    <p><h4>Or enter your desired bin number here: </h4></p> 
+    <p><h4>Or enter your desired bin number here: </h4></p>
+    <br>
+
 
   <table style="float:left;  border-left-width:25px">
   <tr>
       {% for b in bins %}
       <td>
-        <div class="Bin_selection" style="background: #f0f0f0; width: 10vw; height: 10vw; float: left;" href="#">
-            <h3 style="color:black;">Bin {{ b.bin_num }}</h3>
-          </a>{% comment %}TODO: New endpoint to dispose by bin, endpoint fires off request thru websocket{% endcomment %}
-        </div>
+        <button type="button" class="btn btn-default" onclick="window.location.href='manual_rotate/{{b.bin_num}}'" style="margin-right:35px;">
+          <h3 style="color:black;">Bin {{ b.bin_num }}</h3>
+        </button>{% comment %}TODO: New endpoint to dispose by bin, endpoint fires off request thru websocket{% endcomment %}
       </td>
     {% endfor %}
   </tr>
-  </table>
-  </div>
+</table>
 </div>
+
 
 
 
@@ -71,6 +72,20 @@ Borrowed and adapted from the original code at https://www.labnol.org/software/a
   
       }
     }
+
+    /*function rotate_bin(b){
+      console.log(b);
+
+
+      $.ajax({
+        url: 'manual_rotate/'+b,
+        data: {bin: b},
+        success: function(res) {
+          alert("Redirecting to " + b);
+        }
+
+      });
+    }*/
   </script>
 
 {% endblock %}

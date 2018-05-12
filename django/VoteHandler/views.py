@@ -158,3 +158,30 @@ def carousel_vote(request):
     )
     d_votes.add_votes(1)
     return redirect('VoteHandler:home')
+
+
+def manual_rotate(request,bin_num):
+    """
+    Rotate to a specified bin from a homepage bin button
+    """
+    #specified_bin = request.POST
+    can_info_set = CanInfo.objects.filter(owner=request.user)
+    if can_info_set.exists():
+        can_info = can_info_set.get()
+        request_channel = can_info.channel_name
+        print(f'DEBUG: {can_info} {request_channel} {bin_num}')
+        if request_channel is not None:
+            channel_layer = get_channel_layer()
+            print(f'DEBUG: {can_info} {request_channel} {bin_num}')
+            # Send msg to channel synchronously
+            async_to_sync(channel_layer.send)(
+                request_channel,
+                {
+                    "type": "ws.rotate",
+                    "category": bin_num #Delete this comment, TODO note for Danny to change this
+                    # Take bin num as input parameter, set the category id to this parameter
+                }
+            )
+
+    # TODO: This still feels gross, find a way to handle better
+    return redirect('VoteHandler:home')
