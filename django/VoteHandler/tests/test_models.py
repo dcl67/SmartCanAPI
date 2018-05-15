@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from unittest import skip
 
 from django.core.exceptions import EmptyResultSet
 from django.db import IntegrityError
@@ -55,7 +54,6 @@ class DisposableTestCase(TestCase):
         """Correct top category is returned from valid call"""
         self.assertEqual(self.disposable.get_top_category(), self.category_2)
 
-    @skip('Need to implement EmptyResultSet exception in function')
     def test_disposable_get_top_category_empty_filter(self):
         """Correct error is raised when top category is called but there are no votes"""
         with self.assertRaises(EmptyResultSet):
@@ -64,22 +62,20 @@ class DisposableTestCase(TestCase):
     def test_disposable_get_top_votes(self):
         """Get top votes with varying slice size"""
         votes_list = [self.votes_1, self.votes_2]
-        self.assertCountEqual(list(self.disposable.get_top_votes()), votes_list)
-        self.assertCountEqual(list(self.disposable.get_top_votes(3)), votes_list[:3])
-        self.assertCountEqual(list(self.disposable.get_top_votes(2)), votes_list[:2])
-        self.assertCountEqual(list(self.disposable.get_top_votes(1)), votes_list[:1])
+        self.assertEqual(list(self.disposable.get_top_votes()), votes_list)
+        self.assertEqual(list(self.disposable.get_top_votes(3)), votes_list[:3])
+        self.assertEqual(list(self.disposable.get_top_votes(2)), votes_list[:2])
+        self.assertEqual(list(self.disposable.get_top_votes(1)), votes_list[:1])
 
-    @skip('Need to implement ValueError exception in function')
     def test_disposable_get_top_votes_bad_slice_size(self):
         """Get top votes when slice size is less than one or not an integer"""
-        with self.assertRaises(ValueError):
+        with self.assertRaises(IndexError):
             self.disposable.get_top_votes(0)
-        with self.assertRaises(ValueError):
+        with self.assertRaises(IndexError):
             self.disposable.get_top_votes(-1)
         with self.assertRaises(TypeError):
             self.disposable.get_top_votes('Not an int')
 
-    @skip('Need to implement EmptyResultSet exception in function')
     def test_disposable_get_top_votes_empty_filter(self):
         """Correct error is raised when top votes is called but there are no votes"""
         with self.assertRaises(EmptyResultSet):
@@ -125,7 +121,6 @@ class DisposableVoteTestCase(TestCase):
         self.votes.add_votes(10)
         self.assertEqual(self.votes.count, old_count + 1 + 10)
 
-    @skip('Need to implement TypeError exception in function')
     def test_disposablevote_add_votes_bad(self):
         """Negative and non-integer inputs are handled for add_votes"""
         old_count = self.votes.count

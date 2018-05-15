@@ -8,6 +8,7 @@
 
 from __future__ import unicode_literals
 
+from django.core.exceptions import EmptyResultSet
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import QuerySet
@@ -50,12 +51,15 @@ class Disposable(models.Model):
         #  select_related caches these attributes when it does the query so we
         #  get the entry and the foreign fields we want to use later all in one
         #  query
-        votes = DisposableVote.objects.filter(disposable=self.id) \
-                                      .select_related('category')
-        # TODO: Raise meaningful error if filter returns an empty set
+        votes_set = DisposableVote.objects.filter(disposable=self.id)
+
+        if not votes_set.exists():
+            raise EmptyResultSet
+        votes_set.select_related('category')
+
         top_category = None
         max_count = 0
-        for vote in votes:
+        for vote in votes_set:
             if vote.count > max_count:
                 top_category = vote.category
                 max_count = vote.count
@@ -71,12 +75,22 @@ class Disposable(models.Model):
         Returns:
             QuerySet[Disposable] -- The slice of disposables with the most votes
         """
-        # TODO: Check that this would return the highest, not just the first
-        # TODO: Raise meaningful error if filter returns an empty set
-        votes = DisposableVote.objects.filter(disposable=self.id).select_related('category')
+        if slice_size is not None:
+            try:
+                slice_size = int(slice_size)
+            except (ValueError, TypeError):
+                raise TypeError('slice_size must be convertible to an int')
+
+            if slice_size < 1:
+                raise IndexError('slice_size must at least 1')
+
+        votes_set = DisposableVote.objects.filter(disposable=self.id)
+        if not votes_set.exists():
+            raise EmptyResultSet
+
+        votes = votes_set.select_related('category').order_by('count')
         if slice_size is not None:
             return votes[:slice_size]
-
         return votes
 
     def save(self, *args, **kwargs):
