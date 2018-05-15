@@ -52,6 +52,7 @@ class Disposable(models.Model):
         #  query
         votes = DisposableVote.objects.filter(disposable=self.id) \
                                       .select_related('category')
+        # TODO: Raise meaningful error if filter returns an empty set
         top_category = None
         max_count = 0
         for vote in votes:
@@ -71,6 +72,7 @@ class Disposable(models.Model):
             QuerySet[Disposable] -- The slice of disposables with the most votes
         """
         # TODO: Check that this would return the highest, not just the first
+        # TODO: Raise meaningful error if filter returns an empty set
         votes = DisposableVote.objects.filter(disposable=self.id).select_related('category')
         if slice_size is not None:
             return votes[:slice_size]
