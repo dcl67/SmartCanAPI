@@ -9,6 +9,9 @@ from typing import List, Tuple
 from django.conf import settings
 from django.db.models import QuerySet
 
+from .models import DisposableVote
+
+
 def votes_to_percentages(votes: QuerySet) -> List[Tuple[str, float]]:
     """Returns a descending list of categories with confidence percentages
 
@@ -19,6 +22,12 @@ def votes_to_percentages(votes: QuerySet) -> List[Tuple[str, float]]:
         List[Tuple[str, float]] -- list of categories with confidence percentages
             in ('category', percentage) format
     """
+    if not isinstance(votes, QuerySet) or votes.model is not DisposableVote:
+        raise TypeError('votes must be a QuerySet of DisposableVotes')
+
+    if not votes.exists():
+        raise ValueError('votes cannot be empty')
+
     total = 0
     for vote in votes:
         total += vote.count
