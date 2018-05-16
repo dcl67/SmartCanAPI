@@ -25,18 +25,20 @@
     <p><h4>Or enter your desired bin number here: </h4></p>
     <br>
 
-
-  <table style="float:left;  border-left-width:25px">
-  <tr>
-      {% for b in bins %}
-      <td>
-        <button type="button" class="btn btn-default" onclick="window.location.href='manual_rotate/{{b.bin_num}}'" style="margin-right:35px;">
-          <h3 style="color:black;">Bin {{ b.bin_num }}</h3>
-        </button>{% comment %}TODO: New endpoint to dispose by bin, endpoint fires off request thru websocket{% endcomment %}
-      </td>
-    {% endfor %}
-  </tr>
-</table>
+<form action="{% url 'VoteHandler:manual_rotate' %}" method="POST">
+  {% csrf_token %}
+    <table style="float:left;  border-left-width:25px">
+      <tr>
+          {% for b in bins %}
+          <td>
+            <button type="button" class="btn btn-default" onclick="rotate_bin('{{b.bin_num}}')" name="'{{b.bin_num}}'" value="'{{b.bin_num}}'" style="margin-right:35px;">
+              <h3 style="color:black;">Bin {{ b.bin_num }}</h3>
+            </button>{% comment %}TODO: New endpoint to dispose by bin, endpoint fires off request thru websocket{% endcomment %}
+          </td>
+        {% endfor %}
+      </tr>
+    </table>
+</form>
 </div>
 
 
@@ -73,19 +75,32 @@ Borrowed and adapted from the original code at https://www.labnol.org/software/a
       }
     }
 
-    /*function rotate_bin(b){
-      console.log(b);
+    /* POSTS the requested bin number back to the back-end, located at manual_rotate */
+    function rotate_bin(bin_number){
+      var csrftoken = "{% csrf_token %}";
 
+      var csrfmidtoken = jQuery("[name=csrfmiddlewaretoken]").val();
+
+      console.log(bin_number);
+      json_data = {
+        bin: bin_number,
+        csrf:csrftoken,
+        csrfmiddlewaretoken: csrfmidtoken,
+      };
 
       $.ajax({
-        url: 'manual_rotate/'+b,
-        data: {bin: b},
+        type: 'POST',
+        url: '/api/manual_rotate/',
+        data: json_data,
+        error: function(err){
+          console.log(err);
+        },
         success: function(res) {
-          alert("Redirecting to " + b);
+          window.location.href= "/api/";
         }
 
       });
-    }*/
+    }
   </script>
 
 {% endblock %}

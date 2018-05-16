@@ -149,7 +149,9 @@ def carousel_vote(request):
     return redirect('VoteHandler:home')
 
 
-def manual_rotate(request, bin_num):
+@require_POST
+def manual_rotate(request):
     """Rotate to a specified bin from a homepage bin button"""
+    bin_num = request.POST['bin']
     send_rotate_to_can(user=request.user, bin_num=bin_num)
     return redirect('VoteHandler:home')
