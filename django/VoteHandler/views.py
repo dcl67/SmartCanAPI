@@ -1,12 +1,12 @@
 """Views for handling voting and categorization"""
 
 from __future__ import unicode_literals
+from contextlib import suppress
 import urllib.parse
 
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import EmptyResultSet
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, reverse, redirect
 from django.views.decorators.http import require_POST
@@ -14,9 +14,10 @@ from django.views.decorators.http import require_POST
 from Config.models import CanInfo, Bin
 from .forms import CategorizationForm
 from .models import Category, Disposable, DisposableVote
-from .utils import votes_to_percentages
+from .utils import send_rotate_to_can, votes_to_percentages
 
 
+@require_POST
 def dispose(request):
     """View that receives POST requests for disposals from home's form"""
     try:
@@ -28,38 +29,24 @@ def dispose(request):
         disposeable = Disposable.objects.get(name=user_text.lower())
     except Disposable.DoesNotExist:
         # Create the object, so we have something to assosciate the votes with
-        new_disposable = Disposable(name=user_text)
-        new_disposable.save()
+        Disposable.objects.create(name=user_text)
         return redirect('VoteHandler:categorize', disposable_name=user_text)
 
-    top_category = disposeable.get_top_category()
-    if not top_category:
+    # If we don't have any votes, ask the user to categorize
+    try:
+        top_category = disposeable.get_top_category()
+    except EmptyResultSet:
         return redirect('VoteHandler:categorize', disposable_name=user_text)
 
-    top_category_id = disposeable.get_top_category().id
+    # Get the top category and redirect to categorization if the system is not confident
+    top_category_id = top_category.id
     votes = disposeable.get_top_votes()
     percentage_tuples = votes_to_percentages(votes)
     if percentage_tuples[0][1] < settings.MIN_CONFIDENCE:
         return redirect('VoteHandler:categorize', disposable_name=user_text)
 
-    # Sends the bin number to the appropriate can if the request came from
-    # a logged in can
-    can_info_set = CanInfo.objects.filter(owner=request.user)
-    if can_info_set.exists():
-        can_info = can_info_set.get()
-        request_channel = can_info.channel_name
-        if request_channel is not None:
-            channel_layer = get_channel_layer()
-            # Send msg to channel synchronously
-            async_to_sync(channel_layer.send)(
-                request_channel,
-                {
-                    "type": "ws.rotate",
-                    "category": top_category_id
-                }
-            )
+    send_rotate_to_can(user=request.user, bin_num=top_category_id)
 
-    # TODO: This still feels gross, find a way to handle better
     return HttpResponseRedirect("{0}?{1}".format(
         reverse('VoteHandler:result', args=(disposeable.id, top_category_id)),
         urllib.parse.urlencode(percentage_tuples)
@@ -76,7 +63,9 @@ def categorize(request, disposable_name):
     else:
         initial = {'disposable': disposeable, 'count': settings.CATEGORIZE_VOTE_WEIGHT}
         form = CategorizationForm(initial=initial)
-        votes = {v.category.name: v.count for v in disposeable.get_top_votes()}
+        with suppress(EmptyResultSet):
+            votes = {v.category.name: v.count for v in disposeable.get_top_votes()}
+
     return render(request, 'VoteHandler/categorize.html',
                   {
                       'disposable_name': disposable_name,
@@ -160,28 +149,7 @@ def carousel_vote(request):
     return redirect('VoteHandler:home')
 
 
-def manual_rotate(request,bin_num):
-    """
-    Rotate to a specified bin from a homepage bin button
-    """
-    #specified_bin = request.POST
-    can_info_set = CanInfo.objects.filter(owner=request.user)
-    if can_info_set.exists():
-        can_info = can_info_set.get()
-        request_channel = can_info.channel_name
-        print(f'DEBUG: {can_info} {request_channel} {bin_num}')
-        if request_channel is not None:
-            channel_layer = get_channel_layer()
-            print(f'DEBUG: {can_info} {request_channel} {bin_num}')
-            # Send msg to channel synchronously
-            async_to_sync(channel_layer.send)(
-                request_channel,
-                {
-                    "type": "ws.rotate",
-                    "category": bin_num #Delete this comment, TODO note for Danny to change this
-                    # Take bin num as input parameter, set the category id to this parameter
-                }
-            )
-
-    # TODO: This still feels gross, find a way to handle better
+def manual_rotate(request, bin_num):
+    """Rotate to a specified bin from a homepage bin button"""
+    send_rotate_to_can(user=request.user, bin_num=bin_num)
     return redirect('VoteHandler:home')

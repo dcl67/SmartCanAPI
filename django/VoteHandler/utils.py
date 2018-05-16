@@ -6,10 +6,48 @@ Functions:
 """
 from typing import List, Tuple
 
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+from django.contrib.auth.models import User
 from django.conf import settings
 from django.db.models import QuerySet
 
+from Config.models import CanInfo
 from .models import DisposableVote
+
+def send_rotate_to_can(user: User, bin_num: int) -> bool:
+    """Send the rotate command to the bin assosciated with the user
+
+    Arguments:
+        user {User} -- The user account the can is logged in as
+        bin_num {int} -- The bin number to rotate to
+
+    Returns:
+        bool -- True if the command was sent, False otherwise.
+    """
+    if user is None:
+        return False
+
+    can_info_set = CanInfo.objects.filter(owner=user)
+    if not can_info_set.exists():
+        return False
+
+    can_info = can_info_set.get()
+    request_channel = can_info.channel_name
+    if request_channel is None:
+        return False
+
+    # Send msg to channel synchronously
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.send)(
+        request_channel,
+        {
+            "type": "ws.rotate",
+            "category": bin_num
+        }
+    )
+
+    return True
 
 
 def votes_to_percentages(votes: QuerySet) -> List[Tuple[str, float]]:
