@@ -12,7 +12,6 @@ from django.shortcuts import render, reverse, redirect
 from django.views.decorators.http import require_POST
 
 from Config.models import CanInfo, Bin
-from .forms import CategorizationForm
 from .models import Category, Disposable, DisposableVote
 from .utils import send_rotate_to_can, votes_to_percentages
 
@@ -123,6 +122,8 @@ def carousel_vote(request):
 @require_POST
 def manual_rotate(request):
     """Rotate to a specified bin from a homepage bin button"""
-    bin_num = request.POST['bin']
-    send_rotate_to_can(user=request.user, bin_num=bin_num)
+    bin_num = request.POST.get('bin')
+    if bin_num is not None:
+        send_rotate_to_can(user=request.user, bin_num=bin_num)
+
     return redirect('VoteHandler:home')

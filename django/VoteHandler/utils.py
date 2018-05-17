@@ -28,11 +28,11 @@ def send_rotate_to_can(user: User, bin_num: int) -> bool:
     if user is None:
         return False
 
-    can_info_set = CanInfo.objects.filter(owner=user)
-    if not can_info_set.exists():
+    try:
+        can_info = CanInfo.objects.get(owner=user)
+    except CanInfo.DoesNotExist:
         return False
 
-    can_info = can_info_set.get()
     request_channel = can_info.channel_name
     if request_channel is None:
         return False
