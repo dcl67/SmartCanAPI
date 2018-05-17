@@ -8,9 +8,7 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('categorize/<str:disposable_name>', views.categorize, name='categorize'),
     path('dispose/', views.dispose, name='dispose'),
-    path('result/<int:disposable_name>/<int:category_name>/', views.result, name='result'),
-    path('vote', views.vote, name='vote'),
+    path('result/<int:disposable_id>/<int:category_id>/', views.result, name='result'),
     path('vote/carousel', views.carousel_vote, name='carousel_vote'),
-    #path('fromSpeech/', view.from_speech, name='from_speech'),
     path('manual_rotate/', views.manual_rotate, name='manual_rotate'),
 ]
