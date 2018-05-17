@@ -22,6 +22,13 @@
         "--load-plugins=pylint_django"
     ]
   ```
+  
+## Testing
+ 
+ - run all tests like `$ ./manage.py test`
+ - run a test case like `$ ./manage.py test VoteHandler.tests.test_views.HomeTestCase`
+ - run test with the `--parallel` parameter to run tests in parallel, speeds up tests
+ - run test with the `-k` parameter to keep the db around, greatly speeds up tests
 
 ## Misc. Install Notes
 
