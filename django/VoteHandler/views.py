@@ -2,7 +2,7 @@
 
 from __future__ import unicode_literals
 from contextlib import suppress
-import urllib.parse
+from urllib.parse import urlencode
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -17,6 +17,7 @@ from .models import Category, Disposable, DisposableVote
 from .utils import send_rotate_to_can, votes_to_percentages
 
 
+@login_required
 @require_POST
 def dispose(request):
     """View that receives POST requests for disposals from home's form"""
@@ -26,7 +27,7 @@ def dispose(request):
             return render(request, 'VoteHandler/home.html',
                           {'error_message' : 'Please enter text.'}
                          )
-        disposeable = Disposable.objects.get(name=user_text.lower())
+        disposable = Disposable.objects.get(name=user_text.lower())
     except Disposable.DoesNotExist:
         # Create the object, so we have something to assosciate the votes with
         Disposable.objects.create(name=user_text)
@@ -34,35 +35,33 @@ def dispose(request):
 
     # If we don't have any votes, ask the user to categorize
     try:
-        top_category = disposeable.get_top_category()
+        top_category = disposable.get_top_category()
     except EmptyResultSet:
         return redirect('VoteHandler:categorize', disposable_name=user_text)
 
     # Get the top category and redirect to categorization if the system is not confident
     top_category_id = top_category.id
-    votes = disposeable.get_top_votes()
+    votes = disposable.get_top_votes()
     percentage_tuples = votes_to_percentages(votes)
-    if percentage_tuples[0][1] < settings.MIN_CONFIDENCE:
+    if percentage_tuples[0][1] / 100 < settings.MIN_CONFIDENCE:
         return redirect('VoteHandler:categorize', disposable_name=user_text)
 
     send_rotate_to_can(user=request.user, bin_num=top_category_id)
 
-    return HttpResponseRedirect("{0}?{1}".format(
-        reverse('VoteHandler:result', args=(disposeable.id, top_category_id)),
-        urllib.parse.urlencode(percentage_tuples)
-        ))
+    args = (disposable.id, top_category_id)
+    url = f"{reverse('VoteHandler:result', args=args)}?{urlencode(percentage_tuples)}"
+    return HttpResponseRedirect(url)
 
 
+@login_required
 def categorize(request, disposable_name):
     """View that guides user to selecting the correct category"""
-    err_msg, form, votes = None, None, None
+    err_msg, votes = None, None
     try:
         disposeable = Disposable.objects.get(name=disposable_name.lower())
     except Disposable.DoesNotExist:
         err_msg = "The item '{0}' does not exist in the database".format(disposable_name)
     else:
-        initial = {'disposable': disposeable, 'count': settings.CATEGORIZE_VOTE_WEIGHT}
-        form = CategorizationForm(initial=initial)
         with suppress(EmptyResultSet):
             votes = {v.category.name: v.count for v in disposeable.get_top_votes()}
 
@@ -70,7 +69,6 @@ def categorize(request, disposable_name):
                   {
                       'disposable_name': disposable_name,
                       'error_message': err_msg,
-                      'form': form,
                       'votes': votes
                   }
                  )
@@ -79,76 +77,49 @@ def categorize(request, disposable_name):
 @login_required
 def home(request):
     """Simple landing page for text entry"""
-    logged_in_user = request.user
-    can_instance = CanInfo.objects.get(owner=logged_in_user)
-    bins = Bin.objects.filter(s_id__can_id=can_instance.can_id)
+    bins = None
+    with suppress(CanInfo.DoesNotExist):
+        can_instance = CanInfo.objects.get(owner=request.user)
+        bins = Bin.objects.filter(s_id__can_id=can_instance.can_id)
     return render(request, 'VoteHandler/home.html', {'bins': bins})
 
 
-def result(request, disposable_name, category_name):
+@login_required
+def result(request, disposable_id, category_id):
     """View that handles displaying the results of a dispose to the user"""
     votes = request.GET
     return render(
         request,
         'VoteHandler/result.html',
         {
-            'disposable_name': Disposable.objects.get(id=disposable_name).name,
-            'category_name': Category.objects.get(id=category_name).name,
+            'disposable_name': Disposable.objects.get(id=disposable_id).name,
+            'category_name': Category.objects.get(id=category_id).name,
             'votes': sorted(votes.items(), key=lambda x: x[1], reverse=True)
         }
     )
 
-
-@require_POST
-def vote(request):
-    """ POST endpoint for voting"""
-    form = CategorizationForm(request.POST)
-    if form.is_valid():
-        try:
-            # If we have an entry, update it
-            d_votes = DisposableVote.objects.get(
-                disposable=form.cleaned_data['disposable'],
-                category=form.cleaned_data['category']
-            )
-            print(form.cleaned_data['disposable'])
-            print(form.cleaned_data['category'])
-            print(d_votes)
-            d_votes.add_votes(form.cleaned_data['count'])
-        except DisposableVote.DoesNotExist:
-            form.save()
-        return redirect('VoteHandler:home')
-
-    err_msg = 'Form was rejected with error: {0}'.format(form.errors.as_json())
-    return render(
-        request,
-        'VoteHandler/categorize.html',
-        {
-            'disposable_name' : request.POST.get('disposable_name', ''),
-            'error_message': err_msg,
-            'form' : form,
-        }
-    )
-
+@login_required
 @require_POST
 def carousel_vote(request):
     """
     A POST view for voting via images
     """
-    #Get disposable and category
+    # Get disposable and category
     data = request.POST
     disposable = Disposable.objects.get(name=data['disp_item'])
-    category_vote = Category.objects.get(name=data['vote'])
+    category = Category.objects.get(name=data['vote'])
 
     # Create with zero votes if it didn't exist
-    d_votes, _created = DisposableVote.objects.get_or_create(
+    d_votes, _ = DisposableVote.objects.get_or_create(
         disposable=disposable,
-        category=category_vote,
+        category=category,
         defaults={'count': 0}
     )
-    d_votes.add_votes(1)
+    d_votes.add_votes(settings.CATEGORIZE_VOTE_WEIGHT)
     return redirect('VoteHandler:home')
 
 
+@login_required
 @require_POST
 def manual_rotate(request):
     """Rotate to a specified bin from a homepage bin button"""

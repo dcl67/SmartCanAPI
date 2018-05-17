@@ -23,17 +23,6 @@
 
 <h2>This page is for categorizing {{ disposable_name }}</h2>
 
-{% comment %}Deprecated, we should remove this.
-<p>
-{% if form %}
-    <form  action="{% url 'VoteHandler:vote' %}" method="POST">
-        {% csrf_token %}
-        {{ form }}
-        <input type="submit" value="Submit">
-    </form>
-{% endif %}
-</p>{% endcomment %}
-
 <br>
 <p>
     <div class="your-class">

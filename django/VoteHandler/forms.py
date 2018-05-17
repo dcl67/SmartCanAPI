@@ -5,14 +5,14 @@ from .models import Category, DisposableVote
 class CategorizationForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(CategorizationForm, self).__init__(*args, **kwargs)
-        # self.fields['disposable'].disabled = True
-        # self.fields['count'].disabled = True
         self.fields['disposable'].required = False
         self.fields['count'].required = False
 
-    category = ModelChoiceField(queryset=Category.objects.all(), 
+    category = ModelChoiceField(
+        queryset=Category.objects.all(), 
         empty_label=None,
-        widget=RadioSelect)
+        widget=RadioSelect
+    )
 
     # override since we don't care if it's unique
     def validate_unique(self):
