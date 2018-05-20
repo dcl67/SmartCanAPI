@@ -22,7 +22,7 @@ class ResistorReader():
         """Returns the degrees corresponding to the provided resistance"""
         # group into NUM_RESISTOR bins
         bin_size = RESOLUTION / NUM_RESISTORS
-        return round(value / bin_size) / NUM_RESISTORS * 360
+        return round(resistance / bin_size) / NUM_RESISTORS * 360
 
     def get_adc_raw_output(self):
         """Returns the 0-1023 value of resistance read by the ADC"""
