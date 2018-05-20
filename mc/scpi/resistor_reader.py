@@ -18,10 +18,18 @@ class ResistorReader():
         spi = SPI.SpiDev(spi_port, spi_device)
         return Adafruit_MCP3008.MCP3008(spi=spi)
 
-    def get_degrees(self):
-        """Returns the current angular position represented in degrees"""
-        # 0-1023 value representing resistance
-        value = self.adc.read_adc(self.adc_chan) 
+    def convert_res_to_deg(self, resistance: int):
+        """Returns the degrees corresponding to the provided resistance"""
         # group into NUM_RESISTOR bins
         bin_size = RESOLUTION / NUM_RESISTORS
-        return round(value / bin_size) / NUM_RESISTORS * 360 
+        return round(value / bin_size) / NUM_RESISTORS * 360
+
+    def get_adc_raw_output(self):
+        """Returns the 0-1023 value of resistance read by the ADC"""
+        # 0-1023 value representing resistance
+        return self.adc.read_adc(self.adc_chan)
+
+    def get_degrees(self):
+        """Returns the current angular position represented in degrees"""
+        value = self.get_adc_raw_output()
+        return self.convert_res_to_deg(value)
