@@ -16,6 +16,21 @@ Setup
 ### VPN on rPI
 - Connect to the drexel VPN using the instructions [here](https://cs.uwaterloo.ca/twiki/view/CF/OpenConnect)
 
+Testing
+-------
+
+### Running tests
+- Tests run via python unittest
+- Ex. `python -m unittest mc.scpi.resistor_reader`
+
+### Referencing the scpi files
+- These files are above the testing module's top-level, so to access them, the parent folder needs to be added to path
+- This can be accomplished with code:
+  ```python
+  import sys
+  sys.path.append("..") 
+  ```
+
 ### Testing with ws
 The websocket code doesn't know what redis server you are on, so make sure that any testing you do involving the rPI has the rPI targeting the same redis server as your django server is connected to. In most cases this should mean just test against the EC2 server when dealing with websockets.
 
