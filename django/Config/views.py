@@ -85,6 +85,7 @@ def submit_configuration(request, smartcanid):
     return HttpResponseRedirect(str(smartcanid)+'/configure/')
 
 
+# Currently unused
 @login_required
 def statistics(request, smartcanid):
     """
@@ -93,6 +94,8 @@ def statistics(request, smartcanid):
     instance = get_object_or_404(CanInfo, pk=smartcanid)
 
 
+# Is this being used anymore? This may have been replaced with register down below
+# TODO: change this template to change the owner of CanInfo
 def registerhtml(request):
     """
     Hosting for the front end of registration
@@ -151,16 +154,8 @@ def register(request, can_id):
         # TODO: Direct to a manual entry form
         return HttpResponse("Manual Entry Form Goes Here")
 
+# Is this being used?
+#@login_required
+#def redirect(request, smartcanid):
+#    return HttpResponseRedirect(str(smartcanid)+'/register/')
 
-@login_required
-def redirect(request, smartcanid):
-    return HttpResponseRedirect(str(smartcanid)+'/register/')
-
-
-def json_reader(request):
-    my_path = os.path.abspath(os.path.dirname(__file__))
-    json_data = os.path.join(my_path, '../config.json')
-    datas = open(json_data).read()
-    data = json.dumps(datas)
-    print(data)
-    return HttpResponse(data)

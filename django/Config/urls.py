@@ -13,10 +13,10 @@ urlpatterns = [
     path('configlist/bin', views.configure_bins, name='configure_bin'),
     path('configlist/bin/<int:pk>', views.config_detail.as_view(), name='config_detail'),
     path('configlist/bin/edit/<int:pk>', views.edit_bin, name='edit_bin'),
-    path('<int:smartcan_id>/statistics/', views.statistics, name='statistics'), #statistics view not yet defined
+    path('<int:smartcan_id>/statistics/', views.statistics, name='statistics'),
 
-    path('register/', views.registerhtml, name='registerhtml'), #configure not yet defined
+    path('register/', views.registerhtml, name='registerhtml'),
     path('register/submit/<uuid:can_id>', views.register, name='register'),
 
-    path('redirect', views.redirect, name='redirect'), #configure not yet defined, probably won't need this
+    #path('redirect', views.redirect, name='redirect'), #configure not yet defined, probably won't need this
 ]
