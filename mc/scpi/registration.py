@@ -13,7 +13,6 @@ Functions:
 import getpass
 import json
 import os
-import sys
 import uuid
 import warnings
 from typing import Tuple
@@ -27,6 +26,7 @@ PROTOCOL = 'http://'
 HOSTNAME = 'ec2-34-203-249-228.compute-1.amazonaws.com'
 LOGIN_ENDPOINT = 'admin/login/'
 REGISTER_ENDPOINT = 'config/register/submit/'
+SCPI_PATH = os.path.abspath('/home/pi/SmartCanAPI/mc/scpi')
 
 
 def raise_response_error(response: requests.Response):
@@ -74,7 +74,7 @@ class Registration:
     def __init__(self, config_file_name: str = 'config.json',
                  hostname: str = HOSTNAME):
         self.config = {}
-        self.config_file_name = config_file_name
+        self.config_file_name = os.path.join(SCPI_PATH, config_file_name)
         self._try_load_config()
         if not hostname.startswith(PROTOCOL):
             hostname = PROTOCOL + hostname
@@ -186,8 +186,7 @@ class Registration:
         Returns:
             bool -- True if the config was loaded, False otherwise
         """
-        script_dir = os.path.dirname(os.path.realpath(sys.argv[0]))
-        config_loc = os.path.join(script_dir, self.config_file_name)
+        config_loc = os.path.join(SCPI_PATH, self.config_file_name)
 
         try:
             with open(config_loc) as config_file:
@@ -204,7 +203,7 @@ class Registration:
             bool -- True if the config was saved, False otherwise
         """
         try:
-            with open(self.config_file_name, 'w') as config_file:
+            with open(self.config_file_name, 'w+') as config_file:
                 json.dump(self.config, config_file)
             return True
         except (IOError, OSError)as err_msg:

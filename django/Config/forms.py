@@ -7,7 +7,7 @@ from VoteHandler.models import Category
 class ConfigurationForm(forms.ModelForm):
     class Meta:
         model = Bin
-        fields = '__all__'
+        fields = ['bin_num', 'category',]
 
 class CanConfigurationForm(forms.ModelForm):
     class Meta:

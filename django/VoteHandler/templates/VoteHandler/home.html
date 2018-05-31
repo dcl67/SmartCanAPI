@@ -1,16 +1,14 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
 
-<!-- CSS Styles -->
-<style>
-    .speech {border: 1px solid #DDD; width: 300px; padding: 0; margin: 0}
-    .speech input {border: 0; width: 240px; display: inline-block; height: 30px;}
-    .speech img {float: right; width: 40px }
-  </style>
 
 {% block content %}
 
-<h1>Welcome to SmartCan!</h1>
+<head>
+  <link rel="stylesheet" href="{% static "css/home.css" %}">
+</head>
+
+<h1>Welcome to Smart Can!</h1>
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
@@ -22,50 +20,37 @@
     <input type="submit" id="dispose_submit" value="Enter">
 </form>
 
-    <p><h4>Or enter your desired bin number here: </h4></p>
-    <br>
-
+<h4>Or enter your desired bin number here: </h4>
 <br>
-<p>
-<div id="manual_rotate_form">
-<br>
-<form action="{% url 'VoteHandler:manual_rotate' %}" method="POST">
-    {% csrf_token %}
-    <table style="float:left;  border-left-width:25px">
-      <tr>
-          {% for b in bins %}
-          <td>
-            <button type="button" class="btn btn-default" onclick="rotate_bin('{{b.bin_num}}')" name="'{{b.bin_num}}'" value="'{{b.bin_num}}'" style="margin-right:35px;">
-              <h3 style="color:black;">Bin {{ b.bin_num }}</h3>
-            </button>{% comment %}TODO: New endpoint to dispose by bin, endpoint fires off request thru websocket{% endcomment %}
-          </td>
-        {% endfor %}
-      </tr>
-    </table>
-  </form>
-</div>
-</p>
 
-<div style="padding-top:100px;"
-<p>
-<div class="your-class">
-  <div>
-    Confused where to start? Let us help you.
+
+<form action="{% url 'VoteHandler:manual_rotate' %}" id="bin-btns-form" method="POST">
+  {% csrf_token %}
+  <table class="bin-table">
+    <tr>
+      {% for bin_num, categories in bin_num_to_cats.items %}
+        <td>
+          <button type="button" class="btn btn-default bin-btn" onclick="rotate_bin('{{bin_num}}')" name="'{{bin_num}}'" value="'{{bin_num}}'">
+            <h3 style="color:black;">Bin {{ bin_num }}</h3>
+            {% for category in categories %}
+              {{ category }} <br>
+            {% endfor %}
+          </button>
+        </td>
+      {% endfor %}
+    </tr>
+  </table>
+</form>
+
+
+<div style="padding-top:10px;">
+  <div class="your-class">
+    <h3>Confused where to start? <br>Let us help you.</h3>
+    <h3>Recycling is inconvenient, <br>but it's important to <br>protect our planet.</h3>
+    <h3>Let's work together to <br>take care of our planet.</h3>
+    <h3>Proper disposal is tough, <br>but we can help you with it!</h3>
+    <h3>Recycling is tough, but so <br>is finding a new planet.</h3>
   </div>
-  <div>
-    Recycling is inconvenient, but <br>it's important to protect our planet.
-  </div>
-  <div>
-    Let's work together to take care of our planet.
-  </div>
-  <div>
-    Proper disposal is tough, but we can help you with it!
-  </div>
-  <div>
-    Recycling is tough, but so is finding a new planet.
-  </div>
-</div>
-</p>
 </div>
 
 
@@ -74,9 +59,7 @@ Borrowed and adapted from the original code at https://www.labnol.org/software/a
 {% endcomment %}
 <script>
     function startDictation() {
-  
       if (window.hasOwnProperty('webkitSpeechRecognition')) {
-  
         var recognition = new webkitSpeechRecognition();
   
         recognition.continuous = false;
@@ -86,38 +69,34 @@ Borrowed and adapted from the original code at https://www.labnol.org/software/a
         recognition.start();
   
         recognition.onresult = function(e) {
-          document.getElementById('dispose_input').value
-                                   = e.results[0][0].transcript;
+          document.getElementById('dispose_input').value = e.results[0][0].transcript;
           recognition.stop();
           document.getElementById('labnol').submit();
-          //document.getElementById('labnol');
         };
   
         recognition.onerror = function(e) {
           recognition.stop();
-        }
-  
+        };
       }
     }
 
-    $(document).ready(function(){
+    $(document).ready(function() {
       $('.your-class').slick({
           arrows: true,
-          slidesToShow: 3,
+          slidesToShow: 1,
           slidesToScroll: 1,
           autoplay: true,
           autoplaySpeed: 2000,
           arrows: false
-    });
+      });
     });
 
     /* POSTS the requested bin number back to the back-end, located at manual_rotate */
-    function rotate_bin(bin_number){
+    function rotate_bin(bin_number) {
       var csrftoken = "{% csrf_token %}";
 
       var csrfmidtoken = jQuery("[name=csrfmiddlewaretoken]").val();
 
-      console.log(bin_number);
       json_data = {
         bin: bin_number,
         csrf:csrftoken,
@@ -128,13 +107,12 @@ Borrowed and adapted from the original code at https://www.labnol.org/software/a
         type: 'POST',
         url: '/api/manual_rotate/',
         data: json_data,
-        error: function(err){
+        error: function(err) {
           console.log(err);
         },
         success: function(res) {
           console.log('success');
         }
-
       });
     }
   </script>

@@ -3,6 +3,7 @@
 The mcp is the main script to be run on the RPi.
 Handles registration, pedal events, motor control, and the websocket connection.
 """
+import argparse
 import asyncio
 from functools import partial
 import signal
@@ -15,17 +16,25 @@ from can_ws_client import CanWsClient
 from lid_controller import LidController
 from motor_controller import MotorController
 from registration import Registration, HOSTNAME
-from resistor_reader import ResistorReader
+from rotary_encoder import RotaryEncoderPair
 
 
 BTN_CHAN_0 = 40
 BTN_CHAN_1 = 38
 BTN_CHAN_2 = 36
 
-MTR_1_FWD = 37
-MTR_1_REV = 35
-MTR_2_FWD = 33
-MTR_2_REV = 31
+MTR_1_FWD = 5
+MTR_1_REV = 7
+MTR_2_FWD = 13
+MTR_2_REV = 15
+
+ROT_TOP_CCW = 37
+ROT_TOP_CW = 35
+ROT_BTM_CCW = 33
+ROT_BTM_CW = 31
+
+TOP_GEAR_RATIO = 5.934
+BTM_GEAR_RATIO = 5.928
 
 CHAN_TO_BINS = {
     40: 0,
@@ -41,14 +50,13 @@ async def add_to_queue(bin_q, bin_num, delay_s=0):
     Add a bin number to the queue. Can specify a delay in seconds before adding
     the bin number to the queue.
     """
-    while True:
-        try:
-            await asyncio.sleep(delay_s)
-            await bin_q.put(bin_num)
-        except Exception as ex:
-            print(f"Failed to add 'move to bin #{bin_num}'. Error: {ex}")
-        else:
-            print(f"Added 'move to bin #{bin_num}' to queue")
+    try:
+        await asyncio.sleep(delay_s)
+        await bin_q.put(bin_num)
+    except Exception as ex:
+        print(f"Failed to add 'move to bin #{bin_num}'. Error: {ex}")
+    else:
+        print(f"Added 'move to bin #{bin_num}' to queue")
 
 
 async def move_consumer(bin_q, lid_controller: LidController):
@@ -59,14 +67,18 @@ async def move_consumer(bin_q, lid_controller: LidController):
     while True:
         try:
             bin_num = await bin_q.get()
+            print(f"Consuming 'move to bin #{bin_num}'")
             await lid_controller.open(bin_num)
+            await asyncio.sleep(10)
         except Exception as ex:
             print(f"Failed to 'move to bin #{bin_num}'. Error: {ex}")
         else:
             print(f"Succesful 'move to bin #{bin_num}'")
         finally:
-            await asyncio.sleep(10)
-            await lid_controller.close()
+            try:
+                await lid_controller.close()
+            except Exception as ex:
+                print(f"Failed to close after 'move to bin #{bin_num}'. Error: {ex}")
 
 
 ##### Setup funcs
@@ -82,7 +94,7 @@ def setup_gpio(loop, bin_q):
     GPIO.setmode(GPIO.BOARD)
     # Configure button event callbacks
     for chan in CHAN_TO_BINS:
-        GPIO.setup(chan, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+        GPIO.setup(chan, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         # Setup event callback
         GPIO.add_event_detect(
             chan,
@@ -90,20 +102,42 @@ def setup_gpio(loop, bin_q):
             callback=lambda chan: loop.call_soon_threadsafe(
                 partial(on_event_loop, bin_q=bin_q, channel=chan)
             ),
-            bouncetime=20
+            bouncetime=1000
         )
 
 
-def setup_lid_controller():
+def setup_lid_controller(loop):
     """Sets up the devices for the lid controller"""
-    top_rr = ResistorReader(0)
-    top_mc = MotorController(top_rr, fwd_pin=MTR_1_FWD, rev_pin=MTR_1_REV)
-    btm_rr = ResistorReader(1)
-    btm_mc = MotorController(btm_rr, fwd_pin=MTR_2_FWD, rev_pin=MTR_2_REV)
-    return LidController(top_mc, btm_mc)
+    encoder_pair = RotaryEncoderPair(
+        top_ccw=ROT_TOP_CCW,
+        top_cw=ROT_TOP_CW,
+        btm_ccw=ROT_BTM_CCW,
+        btm_cw=ROT_BTM_CW,
+        top_gear_ratio=TOP_GEAR_RATIO,
+        btm_gear_ratio=BTM_GEAR_RATIO
+    )
+    encoder_pair.calibrate()
+
+    top_mc = MotorController(encoder_pair.encoder_top, fwd_pin=MTR_1_FWD, rev_pin=MTR_1_REV)
+    btm_mc = MotorController(encoder_pair.encoder_btm, fwd_pin=MTR_2_FWD, rev_pin=MTR_2_REV)
+
+    lid = LidController(top_mc, btm_mc)
+
+    lid_fut = asyncio.ensure_future(lid.close())
+    loop.run_until_complete(lid_fut)
+
+    return lid
 
 
 ##### Other funcs
+
+def get_args() -> object:
+    """Sets up and parses the arguments"""
+    parser = argparse.ArgumentParser(description='The main Smart Can process.')
+    parser.add_argument('--offline', action='store_true',
+                        help='Run in offline mode, only using pedals as input.')
+    return parser.parse_args()
+
 
 async def handler_persistance_warpper(bin_q, config):
     """
@@ -144,28 +178,34 @@ def main():
     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
     # Initialize devices
-    l_c = setup_lid_controller()
+    loop = asyncio.get_event_loop()
+    lid = setup_lid_controller(loop)
 
     # Initialize queue
     bin_q = asyncio.Queue()
 
+    # Argument setup and parsing
+    args = get_args()
+    offline = args.offline
+
     # Registration
-    registration = Registration(config_file_name='test_config.json')
-    print('Checking registration...')
-    if not registration.is_registered():
-        print('No registration found. Creating registration')
-        registration.register()
-    else:
-        print('Registration found')
-    config = registration.config
+    if not offline:
+        registration = Registration(config_file_name='test_config.json')
+        print('Checking registration...')
+        if not registration.is_registered():
+            print('No registration found. Creating registration')
+            registration.register()
+        else:
+            print('Registration found')
+        config = registration.config
 
     # Setup pedal events with GPIO
-    loop = asyncio.get_event_loop()
     setup_gpio(loop, bin_q)
 
     # Schedule the tasks
-    tasks = [move_consumer(bin_q, l_c),
-             handler_persistance_warpper(bin_q, config),]
+    tasks = [move_consumer(bin_q, lid)]
+    if not offline:
+        tasks.append(handler_persistance_warpper(bin_q, config))
     for task in tasks:
         asyncio.ensure_future(task)
 

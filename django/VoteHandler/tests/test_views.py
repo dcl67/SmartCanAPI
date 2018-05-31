@@ -166,6 +166,7 @@ class HomeTestCase(TestCase):
 
     def setUp(self):
         # update_or_create returns a tuple where the element is at index 0
+        _ = Category.objects.create(id=19, name='Landfill')
         self.can_info, _ = CanInfo.objects.update_or_create(
             can_id=UUID, owner=self.user, channel_name=None
         )
@@ -201,7 +202,7 @@ class ManualRotateTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(UUID.replace('-', ''), password='')
         self.client.force_login(self.user)
-        self.category = Category.objects.create(name='landfill')
+        self.category = Category.objects.create(id=19, name='Landfill')
         can_info = CanInfo.objects.create(can_id=UUID, owner=self.user, channel_name='')
         self.bin = Bin.objects.create(s_id=can_info, bin_num=0, category=self.category)
 

@@ -1,0 +1,24 @@
+.bin-table {
+    border-left-width:25px;
+    float:left;
+    height:100%;
+}
+
+.bin-btn {
+    height: 100%;
+    margin-left: 10%;
+    margin-right: 35px;
+}
+
+.your-class h3 {
+    text-align:center;
+}
+
+#content {
+    margin-left: 2%;
+}
+
+#dispose_input 
+{
+    padding-top: 2px;
+}

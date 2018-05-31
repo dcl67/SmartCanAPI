@@ -48,7 +48,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 
+SECRET_KEY = '-p8m3-ua+7f!n6baz@lfaary=g@a(b+71fg&98p8kov)5=-94n'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -111,10 +111,10 @@ WSGI_APPLICATION = 'SmartCanAPI.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': '',
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',
+        'NAME': 'smartcan',
+        'USER': 'cancan',
+        'PASSWORD': 'Phone-Timmy-27-Bald',
+        'HOST': 'smartcan-1.c5r2ps7asn7f.us-east-1.rds.amazonaws.com',
         'PORT': '3306',
         'OPTIONS': {
             # Tell MySQLdb to connect with 'utf8mb4' character set
@@ -169,3 +169,5 @@ USE_TZ = True
 STATIC_ROOT = ''
 STATIC_URL = '/static/'
 STATICFILES_DIRS = ( os.path.join('static'),)
+
+LOGOUT_REDIRECT_URL = '/api/'

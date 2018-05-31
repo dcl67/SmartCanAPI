@@ -1,3 +1,4 @@
+{% extends 'base.html' %}
 {% load staticfiles %}
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,28 +17,45 @@
     </style>
 </head>
 
-<h1>Results page</h1>
+{% block content %}
+<div id="body" style="padding-left:25px;">
+    <h1>Results page</h1>
 
-<h2>SmartCan says '{{ disposable_name }}' is a '{{ category_name }}'!</h2>
+    <h2>Smart Can says '{{ disposable_name }}' is a '{{ category_name }}'!</h2>
 
-<table>
-    <tr><th>Rank</th><th>Category</th><th>Confidence</th></tr>
-    {% for category, count in votes %}
-        <tr><td>{{ forloop.counter }}</td><td>{{ category }}</td> <td>{{ count|floatformat:2 }}%</td>
-    {% endfor %}
-</table>
+    <table style="border: 1px solid black; padding-left: 7px; padding-right: 7px; padding-top: 2px; padding-bottom: 2px;">
+        <thead style="border: 1px solid black; padding-left: 7px; padding-right: 7px; padding-top: 2px; padding-bottom: 2px;">
+            <tr style="border: 1px solid black; padding-left: 7px; padding-right: 7px; padding-top: 2px; padding-bottom: 2px;">
+                <th style="border: 1px solid black; padding-left: 7px; padding-right: 7px; padding-top: 2px; padding-bottom: 2px;">Rank</th>
+                <th style="border: 1px solid black; padding-left: 7px; padding-right: 7px; padding-top: 2px; padding-bottom: 2px;">Category</th>
+                <th style="border: 1px solid black; padding-left: 7px; padding-right: 7px; padding-top: 2px; padding-bottom: 2px;">Confidence</th>
+            </tr>
+        </thead>
+        {% for category, count in votes %}
+            <tbody style="border: 1px solid black; padding-left: 7px; padding-right: 7px; padding-top: 2px; padding-bottom: 2px;">
+                <tr style="border: 1px solid black; padding-left: 7px; padding-right: 7px; padding-top: 2px; padding-bottom: 2px;">
+                    <td style="border: 1px solid black; padding-left: 7px; padding-right: 7px; padding-top: 2px; padding-bottom: 2px;">{{ forloop.counter }}</td>
+                    <td style="border: 1px solid black; padding-left: 7px; padding-right: 7px; padding-top: 2px; padding-bottom: 2px;">{{ category }}</td>
+                    <td style="border: 1px solid black; padding-left: 7px; padding-right: 7px; padding-top: 2px; padding-bottom: 2px;">{{ count|floatformat:2 }}%</td>
+                </tr>
+            </tbody>
+        {% endfor %}
+    </table>
 
-<h2>Disagree with this categorization?</h2>
-<p>Click below to suggest another category</p>
+    <h2>Disagree with this categorization?</h2>
+    <p>Click below to suggest another category</p>
 
-<form action="{% url 'VoteHandler:categorize' disposable_name %}" method="GET">
-    <input type="submit" value="Categorize">
-</form>
+    <form action="{% url 'VoteHandler:categorize' disposable_name %}" method="GET">
+        <input type="submit" value="Categorize">
+    </form>
+
+</div>
 
 <script type="text/javascript">
     window.onload = function(){
         setInterval(function(){
             window.location.href= '/api/';
-        }, 10000);
+        }, 15000);
         };
 </script>
+{% endblock %}

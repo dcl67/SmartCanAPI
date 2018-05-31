@@ -1,4 +1,5 @@
 from channels.generic.websocket import JsonWebsocketConsumer
+from contextlib import suppress
 
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
@@ -112,7 +113,9 @@ class CommanderConsumer(JsonWebsocketConsumer):
 
     def ws_rotate(self, event):
         """
-        Send the bin number for the SmartCan to rotate to.
+        Send the bin number for the SmartCan to rotate to based on the
+        category provided.
+
         Raises ClientError if there is no Config with bin info.
         Raises ValueError if there is no category field.
         """
@@ -120,12 +123,27 @@ class CommanderConsumer(JsonWebsocketConsumer):
             raise ClientError(self.CONFIG_IS_NONE)
         if event.get('category') is None:
             raise ValueError("category cannot be None or empty")
+
         try:
+            bin_num = None
             category = event['category']
-            bin_num = Bin.objects.get(s_id=self.can_info, category=category).bin_num
+            category_name = Category.objects.get(id=category).name
+            with suppress(Bin.DoesNotExist):
+                bin_num = Bin.objects.get(s_id=self.can_info, category=category).bin_num
+            
+            # If no matching bin was found, try the default bin
+            if bin_num is None:
+                default_cat = self.can_info.default_category
+                bin_num = Bin.objects.get(s_id=self.can_info, category=default_cat).bin_num
+                print(f'No matching bin for {category_name} on can {self.can_info}, '
+                      f'defaulting to {default_cat} in bin {bin_num}')
         except Bin.DoesNotExist:
-            print(f'Cannot find matching bin for category {category} on bin {self.can_info}')
+            print(f'No matching default bin for category {default_cat} on bin {self.can_info}')
             return
+        except Category.DoesNotExist:
+            print(f'Cannot send category to {self.can_info}. No category exists with id {category}')
+            return
+
         print(f'DEBUG: Sending command to rotate to bin #{bin_num} on {self.channel_name}')
         self.send_json({
             "command": "rotate",

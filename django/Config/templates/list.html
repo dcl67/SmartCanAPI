@@ -12,7 +12,8 @@
 <div style="margin-left:25px; margin-top:15px;">
     <p>
         <h1>
-            Bin configuration for <a href="/config/configlist/{{can.id}}">{{ can.can_id }}</a>
+            {% comment %}Bin configuration for <a href="/config/configlist/{{can.id}}">{{ can.can_id }}</a>{% endcomment %}
+            Bin configuration for {{ can.can_id }}
         </h1>
         Config: {{ can.config }}<br>
     </p>
@@ -27,14 +28,20 @@
         {% for b in bins %}
         <tr style="border:2px solid black;">
             <td style="border:2px solid black;">
-                <a href="/config/configlist/bin/edit/{{b.id}}">{{ b.bin_num }}</a>
+                <a href="/config/bin/edit/{{b.id}}">{{ b.bin_num }}</a>
             </td>
             <td style="border:2px solid black;">
-                <a href="/config/configlist/bin/edit/{{b.id}}">{{ b.category }}</a>
+                <a href="/config/bin/edit/{{b.id}}">{{ b.category }}</a>
             </td>
         </tr>
         {% endfor %}
     </table>
 </div>
+
+<p>
+<div style="margin-left:25px;">
+    <a href="bin/">Add a category to a bin</a>
+</div>
+</p>
 
 {% endblock %}

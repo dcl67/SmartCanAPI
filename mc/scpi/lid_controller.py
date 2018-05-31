@@ -1,3 +1,10 @@
+"""Contains a LidController for use in Smart Can
+
+Classes:
+    LidController -- wraps the MotorControllers providing open and close methods
+"""
+
+import asyncio
 from motor_controller import MotorController
 
 
@@ -6,6 +13,7 @@ class LidController():
     def __init__(self, top_mc: MotorController, btm_mc: MotorController):
         self.top_mc = top_mc
         self.btm_mc = btm_mc
+        self.num_bins = top_mc.num_bins
         self._validate()
 
     async def close(self):
@@ -13,23 +21,17 @@ class LidController():
         Move the bottom lid to match the position of the top lid, closing the
         opening. Returns nothing.
         """
-        await self.btm_mc.move_to_bin(self.top_mc.get_curr_bin())
+        open_bin = self.top_mc.get_curr_bin()
+        num_bins = self.num_bins
+        left = (open_bin - 1) % num_bins
+        await self.btm_mc.move_to_bin(left)
+
 
     async def open(self, bin_num):
         """Moves the lids in an efficient manner to open the correct hole"""
-        await self.top_mc.move_to_bin(bin_num)
-
-        num_bins = self.btm_mc.num_bins
-        left = (bin_num - 1) % num_bins
-        right = (bin_num + 1) % num_bins
-        right_pos = [x % num_bins for x in range(right, num_bins // 2 + right)]
-        if self.btm_mc.get_curr_bin() == left or \
-           self.btm_mc.get_curr_bin() == right:
-            return
-        elif bin_num in right_pos:
-            await self.btm_mc.move_to_bin(right)
-        else:
-            await self.btm_mc.move_to_bin(left)
+        top_move = self.top_mc.move_to_bin(bin_num)
+        btm_move = self.btm_mc.move_to_bin(bin_num)
+        await asyncio.gather(*[top_move, btm_move])
 
 
     def _validate(self):

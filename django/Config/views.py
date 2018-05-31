@@ -17,19 +17,17 @@ from .models import CanInfo, Bin
 from .forms import ConfigurationForm, CanConfigurationForm
 
 
-def home(request):
-    return render(request, 'landing.html')
-
-
 @login_required
 def configlist(request):
-    can_id = request.POST.get('can_id')
+    can_id = request.user.username
     if not can_id:
         return render(request, 'landing.html',
                       {'error_message' : 'Please enter your UUID.'}
                      )
-    bins = Bin.objects.filter(s_id__can_id=can_id)
-    can = CanInfo.objects.get(can_id=can_id)
+    bins = Bin.objects.filter(s_id__can_id=uuid.UUID(can_id).hex)
+    can = CanInfo.objects.get(can_id=uuid.UUID(can_id).hex)
+    print(bins)
+    print(can)
     return render(request, 'list.html', {'bins': bins, 'can': can})
 
 
@@ -40,7 +38,7 @@ def configure_can(request, pk):
     instance = get_object_or_404(CanInfo, pk=pk)
     form = CanConfigurationForm(request.POST or None, instance=instance)
     if form.is_valid():
-        can_id = form.cleaned_data['can_id']
+        can_id = form.cleaned_data['request.user.username']
         owner = form.cleaned_data['owner']
         form.save()
         return HttpResponseRedirect(reverse('Config:configlist'))
@@ -50,12 +48,12 @@ def configure_can(request, pk):
 @login_required
 def configure_bins(request):
     form = ConfigurationForm(request.POST)
+    this_can = CanInfo.objects.get(can_id=request.user.username)
     if request.method == 'POST':
         if form.is_valid():
-            s_id = form.cleaned_data['s_id']
             bin_num = form.cleaned_data['bin_num']
             category = form.cleaned_data['category']
-            new_bin = Bin.objects.create(s_id=s_id, bin_num=bin_num, category=category,)
+            new_bin = Bin.objects.create(s_id=this_can, bin_num=bin_num, category=category,)
             return HttpResponseRedirect(reverse('Config:config_detail', args=(new_bin.id,)))
     else:
         form = ConfigurationForm()
@@ -67,7 +65,7 @@ def edit_bin(request, pk):
     bin_config = get_object_or_404(Bin, pk=pk)
     form = ConfigurationForm(request.POST, instance=bin_config)
     if form.is_valid():
-        s_id = form.cleaned_data
+        s_id = form.cleaned_data['request.user.username']
         bin_num = form.cleaned_data['bin_num']
         category = form.cleaned_data['category']
         form.save()
@@ -78,29 +76,6 @@ def edit_bin(request, pk):
 class config_detail(DetailView):
     model = Bin
     template_name = 'info.html'
-
-
-@login_required
-def submit_configuration(request, smartcanid):
-    return HttpResponseRedirect(str(smartcanid)+'/configure/')
-
-
-# Currently unused
-@login_required
-def statistics(request, smartcanid):
-    """
-    Tabled for now
-    """
-    instance = get_object_or_404(CanInfo, pk=smartcanid)
-
-
-# Is this being used anymore? This may have been replaced with register down below
-# TODO: change this template to change the owner of CanInfo
-def registerhtml(request):
-    """
-    Hosting for the front end of registration
-    """
-    return render(request, 'register.html')
 
 
 @login_required
@@ -153,9 +128,3 @@ def register(request, can_id):
     else:
         # TODO: Direct to a manual entry form
         return HttpResponse("Manual Entry Form Goes Here")
-
-# Is this being used?
-#@login_required
-#def redirect(request, smartcanid):
-#    return HttpResponseRedirect(str(smartcanid)+'/register/')
-

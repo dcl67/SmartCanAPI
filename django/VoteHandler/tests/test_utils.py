@@ -21,6 +21,7 @@ class SendRotateToCanTestCase(TestCase):
                                             password='')
 
     def setUp(self):
+        _ = Category.objects.create(id=19, name='Landfill')
         CanInfo.objects.update_or_create(can_id=self.UUID,
                                          owner=self.USER,
                                          channel_name=self.CHANNEL_NAME)

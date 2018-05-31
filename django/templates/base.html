@@ -22,7 +22,15 @@ The content block and div you have below.
 		width: 100%;
 		background-color: rgb(25, 92, 25);
 		color: white;
-		text-align: left;
+	}
+	.navbar-signout {
+		color:white;
+		float: right;
+		margin-right: 10px;
+	}
+	.navbar-signout-div {
+		margin-right: 30px;
+		margin-top: 15px;
 	}
 </style>
 
@@ -46,7 +54,12 @@ The content block and div you have below.
 	<nav style='background-color:rgb(25, 92, 25);'>
 		<div class="container-fluid">
 			<div class="navbar-header">
-				<a class="navbar-brand" style='color:white;' href="#">Smart Can</a>
+				<a class="navbar-brand" style='color:white; text-align: left;' href="#">Smart Can</a>
+			</div>
+			<div class="navbar-signout-div">
+				{% if user.is_authenticated %}
+					<a class="navbar-signout" href="/accounts/logout">Sign out</a>
+				{% endif %}
 			</div>
 		</div>
 	</nav>
@@ -54,10 +67,6 @@ The content block and div you have below.
 	{% comment %}block and div for content to be overridden by the files we place on top of this one {% endcomment %}
     <div id="content">
 		{% block content %}{% endblock %}
-	</div>
-
-	<div class="footer">
-		<p> - </p> {% comment %} We can add some text here if we want! Our names, perhaps? {% endcomment %}
 	</div>
 
 

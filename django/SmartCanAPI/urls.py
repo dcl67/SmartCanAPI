@@ -28,3 +28,6 @@ urlpatterns = [
     #accounts/password_reset can deal with resetting passwords
     path('accounts/', include('django.contrib.auth.urls')),
 ]
+
+admin.site.site_header = ("Smart Can Admin")
+admin.site.site_title = ("Smart Can Admin")

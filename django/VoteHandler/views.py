@@ -1,6 +1,7 @@
 """Views for handling voting and categorization"""
 
 from __future__ import unicode_literals
+import collections
 from contextlib import suppress
 from urllib.parse import urlencode
 
@@ -76,11 +77,18 @@ def categorize(request, disposable_name):
 @login_required
 def home(request):
     """Simple landing page for text entry"""
-    bins = None
+    bin_num_to_cats = None
     with suppress(CanInfo.DoesNotExist):
         can_instance = CanInfo.objects.get(owner=request.user)
         bins = Bin.objects.filter(s_id__can_id=can_instance.can_id)
-    return render(request, 'VoteHandler/home.html', {'bins': bins})
+
+        # Ordered dict of bin_num to list of categories
+        default_pairs = sorted([(can_bin.bin_num, []) for can_bin in bins], reverse=True)
+        bin_num_to_cats = collections.OrderedDict(default_pairs)
+        for can_bin in bins:
+            bin_num_to_cats[can_bin.bin_num].append(can_bin.category)
+
+    return render(request, 'VoteHandler/home.html', {'bin_num_to_cats': bin_num_to_cats})
 
 
 @login_required
@@ -114,7 +122,10 @@ def carousel_vote(request):
         category=category,
         defaults={'count': 0}
     )
+
     d_votes.add_votes(settings.CATEGORIZE_VOTE_WEIGHT)
+    send_rotate_to_can(user=request.user, bin_num=category.id)
+
     return redirect('VoteHandler:home')
 
 
@@ -122,8 +133,11 @@ def carousel_vote(request):
 @require_POST
 def manual_rotate(request):
     """Rotate to a specified bin from a homepage bin button"""
-    bin_num = request.POST.get('bin')
-    if bin_num is not None:
-        send_rotate_to_can(user=request.user, bin_num=bin_num)
+    bin_instance = Bin.objects.filter(
+        s_id__can_id=request.user.username,
+        bin_num=request.POST.get('bin')
+    )
+    if bin_instance.exists():
+        send_rotate_to_can(user=request.user, bin_num=bin_instance[0].category.id)
 
     return redirect('VoteHandler:home')

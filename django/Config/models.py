@@ -10,6 +10,9 @@ from django.contrib.auth.models import User
 
 from VoteHandler.models import Category
 
+
+LANDFILL_ID = 19
+
 class CanInfo(models.Model):
     """A model that represents a SmartCan instance and related info
 
@@ -18,6 +21,7 @@ class CanInfo(models.Model):
         owner {User} -- The can's user account that is only for this can
         channel_name {str} -- Channel used to find correct websocket via channels
         config {str} -- A TextField that can store additional information
+        default_bin {Bin} -- The bin to use when no other bin matches the category
     """
 
     can_id = models.UUIDField(verbose_name='Smartcan ID', unique=True)
@@ -25,17 +29,18 @@ class CanInfo(models.Model):
     owner = models.OneToOneField(User, on_delete=models.CASCADE, null=True, default=None)
     channel_name = models.CharField(max_length=255, null=True, default=None)
     config = models.TextField(max_length=4096)
+    default_category = models.ForeignKey(Category, on_delete=models.CASCADE, default=LANDFILL_ID)
 
     def __str__(self):
         return str(self.can_id)
-        
+
 
 class Bin(models.Model):
     """Model for bin ownership and category
 
     Attributes:
         s_id {CanInfo} -- The can that the bin is part of
-        bin_num {str} -- The bin number with a can
+        bin_num {int} -- The bin number with a can
         category {Category} -- A category that the bin can accept
 
     Note:
@@ -45,18 +50,16 @@ class Bin(models.Model):
     Restrictions:
         's_id' and 'category' have unique_together
     """
-
     s_id = models.ForeignKey(CanInfo, on_delete=models.CASCADE, db_column='s_id')
-    # TODO: bin_num should be an integer, not a string
-    bin_num = models.CharField(max_length=15)
+    bin_num = models.IntegerField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE, blank=True, null=True)
 
     # non-field property
-    DEFAULT_CATEGORIES =  [
-            Category.objects.get(name='Landfill'),
-            Category.objects.get(name='Organic'),
-            Category.objects.get(name='Unknown')
-        ]
+    DEFAULT_CATEGORIES = [
+        Category.objects.get(name='Landfill'),
+        Category.objects.get(name='Organic'),
+        Category.objects.get(name='Unknown')
+    ]
 
     def __str__(self):
         return str(self.bin_num) + " in " + str(self.s_id)
